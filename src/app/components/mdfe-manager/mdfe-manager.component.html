@@ -1,0 +1,68 @@
+<section class="surface-card section-block">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h2 class="text-lg font-semibold">Gestao de MDFe</h2>
+    <button class="btn-primary">
+      Novo MDFe
+    </button>
+  </div>
+
+  <div class="mb-4 flex flex-wrap gap-2">
+    <input
+      type="text"
+      placeholder="Pesquisar por numero, placa ou percurso"
+      class="input-control w-56"
+    />
+    <button class="btn-ghost">
+      Filtrar
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[1100px] text-sm">
+      <thead class="table-head">
+        <tr>
+          <th class="px-3 py-2 font-medium">Emissao</th>
+          <th class="px-3 py-2 font-medium">Numero</th>
+          <th class="px-3 py-2 font-medium">Percurso</th>
+          <th class="px-3 py-2 font-medium hidden md:table-cell">Placa</th>
+          <th class="px-3 py-2 font-medium hidden lg:table-cell">Valor da carga</th>
+          <th class="px-3 py-2 font-medium hidden lg:table-cell">Peso da carga</th>
+          <th class="px-3 py-2 font-medium hidden md:table-cell">Documentos</th>
+          <th class="px-3 py-2 font-medium">Situacao</th>
+          <th class="px-3 py-2 font-medium">Acoes</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.number) {
+          <tr class="table-row">
+            <td class="px-3 py-3">{{ row.emission }}</td>
+            <td class="px-3 py-3">{{ row.number }}</td>
+            <td class="px-3 py-3">{{ row.route }}</td>
+            <td class="px-3 py-3 hidden md:table-cell">{{ row.plate }}</td>
+            <td class="px-3 py-3 hidden lg:table-cell">{{ row.cargoValue }}</td>
+            <td class="px-3 py-3 hidden lg:table-cell">{{ row.cargoWeight }}</td>
+            <td class="px-3 py-3 hidden md:table-cell">{{ row.documents }}</td>
+            <td class="px-3 py-3">
+              <span
+                class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                [class.bg-emerald-100]="row.status === 'Autorizado'"
+                [class.text-emerald-700]="row.status === 'Autorizado'"
+                [class.bg-blue-100]="row.status === 'Encerrado'"
+                [class.text-blue-700]="row.status === 'Encerrado'"
+              >
+                {{ row.status }}
+              </span>
+            </td>
+            <td class="px-3 py-3">
+              <button class="rounded-md border border-slate-300 px-2 py-1 text-xs transition hover:bg-slate-100">Ver</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="9" class="px-3 py-10 text-center text-sm text-slate-400">Nenhum MDFe encontrado para os filtros atuais.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

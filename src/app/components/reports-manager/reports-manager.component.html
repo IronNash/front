@@ -1,0 +1,103 @@
+<section class="space-y-4">
+  <article class="surface-card section-block">
+    <h2 class="text-lg font-semibold">Relatorios</h2>
+
+    <div class="mt-4 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+      @for (tab of reportTabs(); track tab) {
+        <button
+          class="rounded-md px-3 py-1.5 text-sm font-medium transition"
+          [class.bg-blue-50]="activeReportTab() === tab"
+          [class.text-blue-700]="activeReportTab() === tab"
+          [class.text-slate-600]="activeReportTab() !== tab"
+          [class.hover:bg-slate-100]="activeReportTab() !== tab"
+          (click)="onTabClick(tab)"
+        >
+          {{ tab }}
+        </button>
+      }
+    </div>
+
+    @if (activeReportTab() === 'CTe') {
+      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
+        <div class="grid gap-3 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select class="input-control w-52"><option>Mes anterior</option></select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
+            <select class="input-control w-64"><option>Selecione um ou mais</option></select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
+            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+          </label>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-secondary">Visualizar relatorio</button>
+          <button class="btn-primary">Baixar em Excel</button>
+        </div>
+      </div>
+    } @else if (activeReportTab() === 'MDFe') {
+      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
+        <div class="grid gap-3 sm:grid-cols-3">
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select class="input-control w-52"><option>Mes anterior</option></select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Motorista</span>
+            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
+            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+          </label>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-secondary">Visualizar relatorio</button>
+          <button class="btn-primary">Baixar em Excel</button>
+        </div>
+      </div>
+    } @else {
+      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
+        <div class="grid gap-3 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select class="input-control w-52"><option>Mes anterior</option></select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
+            <select class="input-control w-64"><option>Selecione um ou mais</option></select>
+          </label>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-primary">Baixar em Excel</button>
+        </div>
+      </div>
+    }
+  </article>
+
+  <article class="surface-card section-block">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <h3 class="text-base font-semibold">Colunas do relatorio</h3>
+      <button class="text-sm font-medium text-blue-600 hover:text-blue-700" (click)="onSelectAllColumns()">
+        Selecionar todas
+      </button>
+    </div>
+
+    <div class="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+      @for (column of reportColumns(); track column) {
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            [checked]="selectedReportColumns().includes(column)"
+            (change)="onToggleColumn(column)"
+          />
+          <span>{{ column }}</span>
+        </label>
+      }
+    </div>
+  </article>
+</section>
