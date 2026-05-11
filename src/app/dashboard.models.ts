@@ -1,4 +1,4 @@
-export type MenuTab = 'Visao geral' | 'CTe' | 'MDFe' | 'Relatorios';
+export type MenuTab = 'Visão geral' | 'CTe' | 'MDFe' | 'Relatórios';
 export type ReportTab = 'CTe' | 'MDFe' | 'Cargas';
 
 export type StatCard = {
@@ -16,7 +16,7 @@ export type CteRow = {
   route: string;
   value: string;
   status: string;
-  financialStatus: 'Lancado' | 'Nao lancado';
+  financialStatus: 'Lançado' | 'Não lançado';
   /** Número da NF-e vinculada (quando existir) */
   nfNumber: string;
   remetente: string;

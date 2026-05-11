@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-slate-50 text-slate-800">
-  <div class="flex min-h-screen">
+  <div class="flex min-h-screen min-w-0">
     <aside
       class="fixed inset-y-0 left-0 z-30 w-64 border-r border-slate-200 bg-white text-slate-700 transition-transform duration-200 lg:static lg:translate-x-0"
       [class.-translate-x-full]="!sidebarOpen()"
@@ -43,9 +43,9 @@
       ></button>
     }
 
-    <div class="flex-1 lg:ml-0">
-      <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6">
-        <div class="mx-auto flex w-full max-w-6xl items-center justify-between">
+    <div class="min-w-0 flex-1 lg:ml-0">
+      <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-3 py-3 backdrop-blur sm:px-6">
+        <div class="mx-auto flex w-full min-w-0 max-w-6xl items-center justify-between gap-2">
           <div class="flex items-center gap-3">
             <button
               class="rounded-md border border-slate-300 px-3 py-1.5 text-sm transition hover:bg-slate-50 lg:hidden"
@@ -53,13 +53,13 @@
             >
               Menu
             </button>
-            <h1 class="text-base font-semibold capitalize sm:text-lg">{{ activeTab() }}</h1>
+            <h1 class="min-w-0 truncate text-base font-semibold capitalize sm:text-lg">{{ activeTab() }}</h1>
           </div>
-          <span class="hidden text-sm text-slate-500 sm:block">Workspace local de prototipo</span>
+          <span class="hidden text-sm text-slate-500 sm:block">Workspace local de protótipo</span>
         </div>
       </header>
 
-      <main class="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6">
+      <main class="mx-auto w-full min-w-0 max-w-6xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-6">
         <ng-content />
       </main>
     </div>

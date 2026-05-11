@@ -10,7 +10,7 @@ type CteFilters = {
   customStart: string;
   customEnd: string;
   status: string;
-  /** Tomador: texto livre + sugestoes (nao e select) */
+  /** Tomador: texto livre + sugestões (não é `<select>`). */
   customer: string;
   financialStatus: string;
   advancedEnabled: boolean;
@@ -51,7 +51,7 @@ export class CteManagerComponent {
   readonly appliedFilters = signal<CteFilters>(createEmptyFilters());
   readonly draftFilters = signal<CteFilters>(createEmptyFilters());
 
-  /** Qual campo de autocomplete esta com foco dentro do modal (para lista de sugestoes). */
+  /** Qual campo de autocomplete está com foco no modal (lista de sugestões). */
   readonly autocompleteOpen = signal<'customer' | 'sender' | 'recipient' | null>(null);
 
   /** Second-level modal for "Personalizado" date range */
@@ -59,14 +59,14 @@ export class CteManagerComponent {
   readonly draftCustomStart = signal('');
   readonly draftCustomEnd = signal('');
 
-  /** Shown under Periodo when Filtrar is clicked with missing custom range */
+  /** Exibido sob Período quando "Filtrar" é acionado sem intervalo personalizado válido. */
   readonly periodApplyError = signal(false);
 
   readonly periodOptions = [
-    { value: '' as const, label: 'Selecione um periodo' },
+    { value: '' as const, label: 'Selecione um período' },
     { value: 'hoje' as const, label: 'Hoje' },
-    { value: 'este-mes' as const, label: 'Este mes' },
-    { value: 'mes-anterior' as const, label: 'Mes anterior' },
+    { value: 'este-mes' as const, label: 'Este mês' },
+    { value: 'mes-anterior' as const, label: 'Mês anterior' },
     { value: 'personalizado' as const, label: 'Personalizado' },
   ];
 
@@ -267,7 +267,7 @@ export class CteManagerComponent {
 
   /**
    * Busca rapida: texto em qualquer coluna relevante.
-   * Para **valor em BRL**, nao usamos substring de digitos (evita "1050" casar com "10,50").
+   * Para valor em BRL, não usamos substring só de dígitos (evita "1050" casar com "10,50").
    * Em vez disso, comparamos **centavos** quando a busca parece um valor monetario.
    */
   private matchesSearchTerm(row: CteRow): boolean {
@@ -467,7 +467,7 @@ export class CteManagerComponent {
     return intPart * 100 + fracNum;
   }
 
-  /** So aplica comparacao monetaria se a busca parecer um valor (digitos / BRL), nao texto misto. */
+  /** Só aplica comparação monetária se a busca parecer um valor (dígitos / BRL), não texto misto. */
   private tryParseMoneyQueryToCentavos(raw: string): number | null {
     const stripped = raw.trim().replace(/R\$\s*/gi, '').replace(/\s/g, '');
     if (!stripped || !/^[\d.,]+$/.test(stripped)) {

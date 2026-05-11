@@ -8,7 +8,7 @@ import { MenuTab } from '../../dashboard.models';
 })
 export class LayoutShellComponent {
   readonly menuItems = input<MenuTab[]>([]);
-  readonly activeTab = input<MenuTab>('Visao geral');
+  readonly activeTab = input<MenuTab>('Visão geral');
   readonly sidebarOpen = input(false);
 
   readonly menuToggle = output<void>();

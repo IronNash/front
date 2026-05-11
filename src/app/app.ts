@@ -14,11 +14,11 @@ import { reportColumnsByTab, selectedReportColumnsByTabDefault } from './reports
 })
 export class App {
   protected readonly sidebarOpen = signal(false);
-  protected readonly selectedMonth = signal('Ultimos 30 dias');
-  protected readonly activeTab = signal<MenuTab>('Visao geral');
+  protected readonly selectedMonth = signal('Últimos 30 dias');
+  protected readonly activeTab = signal<MenuTab>('Visão geral');
   protected readonly activeReportTab = signal<ReportTab>('CTe');
 
-  protected readonly menuItems: MenuTab[] = ['Visao geral', 'CTe', 'MDFe', 'Relatorios'];
+  protected readonly menuItems: MenuTab[] = ['Visão geral', 'CTe', 'MDFe', 'Relatórios'];
   protected readonly reportTabs: ReportTab[] = ['CTe', 'MDFe', 'Cargas'];
 
   protected readonly stats: StatCard[] = [
@@ -28,12 +28,12 @@ export class App {
       tone: 'blue',
     },
     {
-      label: 'Pendencias',
+      label: 'Pendências',
       value: '07',
       tone: 'yellow',
     },
     {
-      label: 'Viagens concluidas',
+      label: 'Viagens concluídas',
       value: '94%',
       tone: 'blue',
     },
@@ -60,7 +60,7 @@ export class App {
       route: 'Guaramirim/SC - Jundiai/SP',
       value: 'R$ 1.100,00',
       status: 'Manifestado',
-      financialStatus: 'Lancado',
+      financialStatus: 'Lançado',
       nfNumber: '45231',
       remetente: 'Metalurgica Guaramirim LTDA',
       destinatario: 'Industria Jundiai SP',
@@ -73,7 +73,7 @@ export class App {
       route: 'Guaramirim/SC - Cachoeira/BA',
       value: 'R$ 4.150,00',
       status: 'Manifestado',
-      financialStatus: 'Nao lancado',
+      financialStatus: 'Não lançado',
       nfNumber: '1050',
       remetente: 'DEVOTUM INDUSTRIA E COM.',
       destinatario: 'Distribuidora Cachoeira BA',
@@ -86,7 +86,7 @@ export class App {
       route: 'Guaramirim/SC - Cachoeira/BA',
       value: 'R$ 2.500,00',
       status: 'Manifestado',
-      financialStatus: 'Lancado',
+      financialStatus: 'Lançado',
       nfNumber: '998877',
       remetente: 'Transportadora Sul LTDA',
       destinatario: 'DEVOTUM INDUSTRIA E COM.',
@@ -99,7 +99,7 @@ export class App {
       route: 'Guaramirim/SC - Cachoeira/BA',
       value: 'R$ 10,50',
       status: 'Manifestado',
-      financialStatus: 'Nao lancado',
+      financialStatus: 'Não lançado',
       nfNumber: '66001',
       remetente: 'S.M.A INDUSTRIA E COMER.',
       destinatario: 'Armazem Cachoeira LTDA',

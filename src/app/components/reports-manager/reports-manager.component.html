@@ -1,6 +1,6 @@
-<section class="space-y-4">
-  <article class="surface-card section-block">
-    <h2 class="text-lg font-semibold">Relatorios</h2>
+<section class="space-y-4 min-w-0">
+  <article class="surface-card section-block min-w-0">
+    <h2 class="text-lg font-semibold">Relatórios</h2>
 
     <div class="mt-4 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
       @for (tab of reportTabs(); track tab) {
@@ -18,57 +18,57 @@
     </div>
 
     @if (activeReportTab() === 'CTe') {
-      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
-        <div class="grid gap-3 sm:grid-cols-3">
-          <label class="block text-sm">
+      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
+        <div class="grid min-w-0 gap-3 sm:grid-cols-3">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-52"><option>Mes anterior</option></select>
+            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
           </label>
-          <label class="block text-sm">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
-            <select class="input-control w-64"><option>Selecione um ou mais</option></select>
+            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
           </label>
-          <label class="block text-sm">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
-            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
           </label>
         </div>
         <div class="flex gap-2">
-          <button class="btn-secondary">Visualizar relatorio</button>
+          <button class="btn-secondary">Visualizar relatório</button>
           <button class="btn-primary">Baixar em Excel</button>
         </div>
       </div>
     } @else if (activeReportTab() === 'MDFe') {
-      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
-        <div class="grid gap-3 sm:grid-cols-3">
-          <label class="block text-sm">
+      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
+        <div class="grid min-w-0 gap-3 sm:grid-cols-3">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-52"><option>Mes anterior</option></select>
+            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
           </label>
-          <label class="block text-sm">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Motorista</span>
-            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
           </label>
-          <label class="block text-sm">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
-            <select class="input-control w-60"><option>Selecione um ou mais</option></select>
+            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
           </label>
         </div>
         <div class="flex gap-2">
-          <button class="btn-secondary">Visualizar relatorio</button>
+          <button class="btn-secondary">Visualizar relatório</button>
           <button class="btn-primary">Baixar em Excel</button>
         </div>
       </div>
     } @else {
-      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
-        <div class="grid gap-3 sm:grid-cols-2">
-          <label class="block text-sm">
+      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
+        <div class="grid min-w-0 gap-3 sm:grid-cols-2">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-52"><option>Mes anterior</option></select>
+            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
           </label>
-          <label class="block text-sm">
+          <label class="block min-w-0 text-sm">
             <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
-            <select class="input-control w-64"><option>Selecione um ou mais</option></select>
+            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
           </label>
         </div>
         <div class="flex gap-2">
@@ -78,9 +78,9 @@
     }
   </article>
 
-  <article class="surface-card section-block">
+  <article class="surface-card section-block min-w-0">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-      <h3 class="text-base font-semibold">Colunas do relatorio</h3>
+      <h3 class="text-base font-semibold">Colunas do relatório</h3>
       <button class="text-sm font-medium text-blue-600 hover:text-blue-700" (click)="onSelectAllColumns()">
         Selecionar todas
       </button>
