@@ -11,10 +11,16 @@ export type CteRow = {
   emission: string;
   number: string;
   type: string;
+  /** Tomador (quem paga o frete) */
   customer: string;
   route: string;
   value: string;
   status: string;
+  financialStatus: 'Lancado' | 'Nao lancado';
+  /** Número da NF-e vinculada (quando existir) */
+  nfNumber: string;
+  remetente: string;
+  destinatario: string;
 };
 
 export type MdfeRow = {

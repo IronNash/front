@@ -60,6 +60,10 @@ export class App {
       route: 'Guaramirim/SC - Jundiai/SP',
       value: 'R$ 1.100,00',
       status: 'Manifestado',
+      financialStatus: 'Lancado',
+      nfNumber: '45231',
+      remetente: 'Metalurgica Guaramirim LTDA',
+      destinatario: 'Industria Jundiai SP',
     },
     {
       emission: '05/05/2026',
@@ -69,6 +73,10 @@ export class App {
       route: 'Guaramirim/SC - Cachoeira/BA',
       value: 'R$ 4.150,00',
       status: 'Manifestado',
+      financialStatus: 'Nao lancado',
+      nfNumber: '1050',
+      remetente: 'DEVOTUM INDUSTRIA E COM.',
+      destinatario: 'Distribuidora Cachoeira BA',
     },
     {
       emission: '05/05/2026',
@@ -78,6 +86,10 @@ export class App {
       route: 'Guaramirim/SC - Cachoeira/BA',
       value: 'R$ 2.500,00',
       status: 'Manifestado',
+      financialStatus: 'Lancado',
+      nfNumber: '998877',
+      remetente: 'Transportadora Sul LTDA',
+      destinatario: 'DEVOTUM INDUSTRIA E COM.',
     },
     {
       emission: '27/04/2026',
@@ -85,8 +97,12 @@ export class App {
       type: 'Normal',
       customer: 'S.M.A INDUSTRIA E COMER.',
       route: 'Guaramirim/SC - Cachoeira/BA',
-      value: 'R$ 1.000,00',
+      value: 'R$ 10,50',
       status: 'Manifestado',
+      financialStatus: 'Nao lancado',
+      nfNumber: '66001',
+      remetente: 'S.M.A INDUSTRIA E COMER.',
+      destinatario: 'Armazem Cachoeira LTDA',
     },
   ];
 
