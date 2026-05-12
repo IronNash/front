@@ -1,5 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { CteManagerComponent } from './components/cte-manager/cte-manager.component';
+import { type NewCteDocumentId, type NewCteOriginDocumentFormPayload } from './components/cte-manager/cte-manager.models';
 import { LayoutShellComponent } from './components/layout-shell/layout-shell.component';
 import { MdfeManagerComponent } from './components/mdfe-manager/mdfe-manager.component';
 import { ReportsManagerComponent } from './components/reports-manager/reports-manager.component';
@@ -17,6 +18,19 @@ export class App {
   protected readonly selectedMonth = signal('Últimos 30 dias');
   protected readonly activeTab = signal<MenuTab>('Visão geral');
   protected readonly activeReportTab = signal<ReportTab>('CTe');
+
+  /** Document the user picked in “Novo CTe” (banner on the CTe tab). */
+  protected readonly newCteDocumentChoice = signal<NewCteDocumentId | null>(null);
+
+  /** Demo only: row ids returned from the in-app SEFAZ list when the user clicks Adicionar. */
+  protected readonly lastNfeSefazDemoRowIds = signal<string | null>(null);
+
+  private readonly newCteDocumentLabels: Record<NewCteDocumentId, string> = {
+    nfe: 'NF-e',
+    'third-party-cte': 'CTe de outra transportadora',
+    'rural-producer': 'Nota de produtor rural',
+    other: 'Outro documento',
+  };
 
   protected readonly menuItems: MenuTab[] = ['Visão geral', 'CTe', 'MDFe', 'Relatórios'];
   protected readonly reportTabs: ReportTab[] = ['CTe', 'MDFe', 'Cargas'];
@@ -178,6 +192,39 @@ export class App {
   protected setActiveTab(tab: MenuTab): void {
     this.activeTab.set(tab);
     this.closeSidebar();
+    if (tab !== 'CTe') {
+      this.newCteDocumentChoice.set(null);
+      this.lastNfeSefazDemoRowIds.set(null);
+    }
+  }
+
+  protected onNewCteDocumentSelected(documentId: NewCteDocumentId): void {
+    this.newCteDocumentChoice.set(documentId);
+  }
+
+  protected onNfeSefazSelectionConfirmed(event: { rowIds: string[] }): void {
+    this.lastNfeSefazDemoRowIds.set(event.rowIds.join(', '));
+  }
+
+  /** Hook when the user submits the manual origin-document form (non–NF-e paths). */
+  protected onNewCteOriginDocumentCaptured(_event: {
+    pathChoice: NewCteDocumentId;
+    payload: NewCteOriginDocumentFormPayload;
+  }): void {
+    // Ex.: POST /api/cte/drafts com `_event.payload` e seguir o assistente.
+  }
+
+  protected clearNewCteDocumentChoice(): void {
+    this.newCteDocumentChoice.set(null);
+    this.lastNfeSefazDemoRowIds.set(null);
+  }
+
+  protected clearLastNfeSefazDemoPick(): void {
+    this.lastNfeSefazDemoRowIds.set(null);
+  }
+
+  protected labelForNewCteDocument(id: NewCteDocumentId): string {
+    return this.newCteDocumentLabels[id];
   }
 
   protected setActiveReportTab(tab: ReportTab): void {

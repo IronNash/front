@@ -1,0 +1,81 @@
+<app-cte-modal-shell
+  [open]="open()"
+  overlayTier="cte-origin-doc-form"
+  [panelMaxWidthClass]="'max-w-4xl'"
+  [ariaLabelledBy]="'origin-doc-form-title'"
+  (backdropDismiss)="onBackdropDismiss()"
+  (closeRequested)="onCloseRequested()"
+>
+  <div cteModalShellHeading>
+    <h3 id="origin-doc-form-title" class="text-xl font-semibold text-slate-900 sm:text-2xl">Informe os dados do documento</h3>
+  </div>
+  <button type="button" class="btn-secondary text-sm" cteModalShellToolbar (click)="requestHelp()">Como fazer</button>
+
+  <form class="space-y-5" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="block min-w-0">
+        <span class="form-field-label">
+          Tipo de documento originário <span class="text-red-500">*</span>
+        </span>
+        <select class="input-control w-full bg-white text-slate-800" formControlName="originDocumentKindId">
+          @for (opt of originTypeOptions; track opt.id) {
+            <option [value]="opt.id">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="block min-w-0">
+        <span class="form-field-label">
+          Descrição do documento <span class="text-red-500">*</span>
+        </span>
+        <input type="text" class="input-control w-full text-slate-800" autocomplete="off" formControlName="description" />
+        @if (showFieldError('description')) {
+          <p class="mt-1 text-sm text-red-600">Informe uma descrição.</p>
+        }
+      </label>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-3">
+      <label class="block min-w-0 sm:col-span-1">
+        <span class="form-field-label">Número do documento</span>
+        <input type="text" class="input-control w-full text-slate-800" autocomplete="off" formControlName="documentNumber" />
+      </label>
+
+      <label class="block min-w-0 sm:col-span-1">
+        <span class="mb-1 flex items-center gap-1.5 text-sm font-medium text-slate-700">
+          Valor do documento <span class="text-red-500">*</span>
+          <app-field-hint-icon
+            hint="Informe o valor total do documento de referência, no formato brasileiro (ex.: R$ 1.234,56). Ao sair do campo, o valor é padronizado."
+          />
+        </span>
+        <input
+          type="text"
+          class="input-control w-full text-slate-800"
+          placeholder="R$ 0,00"
+          inputmode="decimal"
+          autocomplete="off"
+          formControlName="documentValue"
+          appBrlCurrencyBlurFormat
+        />
+        @if (showFieldError('documentValue')) {
+          <p class="mt-1 text-sm text-red-600">Informe um valor válido maior que zero (ex.: R$ 150,00).</p>
+        }
+      </label>
+
+      <label class="block min-w-0 sm:col-span-1">
+        <span class="form-field-label">
+          Data de emissão <span class="text-red-500">*</span>
+        </span>
+        <input type="date" class="input-control w-full bg-white text-slate-800" formControlName="issueDate" />
+        @if (showFieldError('issueDate')) {
+          <p class="mt-1 text-sm text-red-600">Selecione a data de emissão.</p>
+        }
+      </label>
+    </div>
+
+    <div class="mt-8 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-5">
+      <button type="button" class="btn-ghost" (click)="onCloseRequested()">Cancelar</button>
+      <button type="submit" class="btn-primary">Adicionar</button>
+    </div>
+  </form>
+</app-cte-modal-shell>

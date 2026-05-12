@@ -1,10 +1,30 @@
 <section class="surface-card section-block @container min-w-0">
   <div class="mb-3 flex min-w-0 flex-wrap items-center justify-between gap-2">
     <h2 class="text-lg font-semibold">Gestão de CTe</h2>
-    <button class="btn-primary shrink-0" type="button">
+    <button class="btn-primary shrink-0" type="button" (click)="openNewCteDocumentPicker()">
       Novo CTe
     </button>
   </div>
+
+  @if (newCteNfeWizardBanner(); as toast) {
+    <div
+      class="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-950"
+      role="status"
+    >
+      <p class="min-w-0 flex-1">{{ toast }}</p>
+      <button type="button" class="btn-ghost shrink-0 px-3 py-1.5 text-xs" (click)="dismissNewCteNfeWizardBanner()">Fechar</button>
+    </div>
+  }
+
+  @if (originDocumentFlowBanner(); as originMsg) {
+    <div
+      class="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm text-sky-950"
+      role="status"
+    >
+      <p class="min-w-0 flex-1">{{ originMsg }}</p>
+      <button type="button" class="btn-ghost shrink-0 px-3 py-1.5 text-xs" (click)="dismissOriginDocumentFlowBanner()">Fechar</button>
+    </div>
+  }
 
   <div class="mb-3 flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     <input
@@ -15,14 +35,14 @@
       (input)="updateSearchTerm($any($event.target).value)"
     />
     <div class="flex shrink-0 items-center gap-2">
-      <button class="btn-ghost inline-flex items-center justify-center gap-2 whitespace-nowrap" type="button" (click)="openFilterModal()">
+      <button class="btn-ghost inline-flex items-center justify-center gap-2 whitespace-nowrap" type="button" (click)="openCteListFiltersModal()">
         <svg class="h-4 w-4 shrink-0 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M22 3H2l8 9.09V19l4 4v-6.91L22 3z" />
         </svg>
         Filtrar
       </button>
-      @if (hasActiveFilters()) {
-        <button class="btn-ghost inline-flex shrink-0 items-center justify-center whitespace-nowrap px-3 text-xs sm:text-sm" type="button" (click)="clearModalFilters()">
+      @if (hasActiveCteListFilters()) {
+        <button class="btn-ghost inline-flex shrink-0 items-center justify-center whitespace-nowrap px-3 text-xs sm:text-sm" type="button" (click)="clearCteListModalFilters()">
           Limpar
         </button>
       }
@@ -100,308 +120,34 @@
   </div>
 </section>
 
-@if (isFilterModalOpen()) {
-  <div class="fixed inset-0 z-40 bg-slate-950/40 px-4 py-8 sm:px-6" (click)="onMainBackdropClick()" role="presentation">
-    <div
-      class="mx-auto w-full max-w-2xl rounded-2xl bg-white p-5 shadow-2xl sm:p-6"
-      (click)="$event.stopPropagation()"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cte-filter-title"
-    >
-      <div class="mb-5 flex items-start justify-between gap-4">
-        <h3 id="cte-filter-title" class="text-3xl font-semibold leading-none text-slate-800">Filtros CTe</h3>
-        <button
-          type="button"
-          class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-          (click)="closeFilterModal()"
-          aria-label="Fechar filtros"
-        >
-          x
-        </button>
-      </div>
+<app-cte-list-filters-modal
+  [open]="isCteListFiltersModalOpen()"
+  [rows]="rows()"
+  [appliedSnapshot]="appliedCteListFilters()"
+  (modalClosed)="onCteListFiltersModalClosed()"
+  (savedFilters)="onCteListFiltersSaved($event)"
+/>
 
-      <div class="space-y-4">
-        <label class="block">
-          <span class="mb-1 block text-sm font-medium text-slate-700">Período</span>
-          <select
-            class="input-control w-full bg-white text-slate-800"
-            [value]="draftFilters().periodPreset"
-            (change)="onPeriodChange($any($event.target).value)"
-          >
-            @for (opt of periodOptions; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
-          @if (draftFilters().periodPreset === 'personalizado' && draftFilters().customStart && draftFilters().customEnd) {
-            <p class="mt-2 text-xs text-slate-500">
-              Intervalo atual:
-              <span class="font-medium text-slate-700">{{ draftFilters().customStart }} — {{ draftFilters().customEnd }}</span>
-              <button type="button" class="ml-2 text-blue-600 underline hover:text-blue-800" (click)="openCustomDateModal()">
-                Editar datas
-              </button>
-            </p>
-          }
-          @if (periodApplyError()) {
-            <p class="mt-2 text-sm text-red-600">Selecione um intervalo válido para "Personalizado" (datas obrigatórias).</p>
-          }
-        </label>
+<app-new-cte-document-modal
+  [open]="isNewCteDocumentPickerOpen()"
+  (documentPicked)="onNewCteDocumentPicked($event)"
+  (modalClosed)="closeNewCteDocumentPicker()"
+  (helpRequested)="openNewCteHelp()"
+/>
 
-        <label class="block">
-          <span class="mb-1 block text-sm font-medium text-slate-700">Situação</span>
-          <select
-            class="input-control w-full bg-white text-slate-800"
-            [value]="draftFilters().status"
-            (change)="updateDraftFilter('status', $any($event.target).value)"
-          >
-            <option value="">Selecione uma situação</option>
-            @for (status of statusOptions(); track status) {
-              <option [value]="status">{{ status }}</option>
-            }
-          </select>
-        </label>
-
-        <div
-          class="relative"
-          (focusin)="setAutocompleteOpen('customer')"
-          (focusout)="onAutocompleteHostFocusOut($event, 'customer')"
-        >
-          <span class="mb-1 block text-sm font-medium text-slate-700">Tomador (responsável por pagar o frete)</span>
-          <input
-            type="text"
-            class="input-control w-full text-slate-800"
-            placeholder="Digite para buscar"
-            autocomplete="off"
-            [value]="draftFilters().customer"
-            (input)="updateDraftFilter('customer', $any($event.target).value)"
-          />
-          @if (autocompleteOpen() === 'customer' && customerSuggestions().length > 0) {
-            <ul
-              class="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg"
-              role="listbox"
-            >
-              @for (item of customerSuggestions(); track item) {
-                <li role="option">
-                  <button
-                    type="button"
-                    class="w-full px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="pickAutocompleteSuggestion('customer', item)"
-                  >
-                    {{ item }}
-                  </button>
-                </li>
-              }
-            </ul>
-          }
-        </div>
-
-        @if (draftFilters().advancedEnabled) {
-          <div class="space-y-4 border-t border-slate-200 pt-4">
-            <label class="block">
-              <span class="mb-1 block text-sm font-medium text-slate-700">Lançamento de CTes no financeiro</span>
-              <select
-                class="input-control w-full bg-white text-slate-800"
-                [value]="draftFilters().financialStatus"
-                (change)="updateDraftFilter('financialStatus', $any($event.target).value)"
-              >
-                <option value="">Selecione</option>
-                @for (financialStatus of financialStatusOptions(); track financialStatus) {
-                  <option [value]="financialStatus">{{ financialStatus }}</option>
-                }
-              </select>
-            </label>
-
-            <label class="block">
-              <span class="mb-1 block text-sm font-medium text-slate-700">Tipo de CTe</span>
-              <select
-                class="input-control w-full bg-white text-slate-800"
-                [value]="draftFilters().cteType"
-                (change)="updateDraftFilter('cteType', $any($event.target).value)"
-              >
-                <option value="">Selecione o tipo</option>
-                @for (t of typeOptions(); track t) {
-                  <option [value]="t">{{ t }}</option>
-                }
-              </select>
-            </label>
-
-            <div class="grid gap-3 sm:grid-cols-2">
-              <label class="block">
-                <span class="mb-1 block text-sm font-medium text-slate-700">Nº inicial do CTe</span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  class="input-control w-full text-slate-800"
-                  placeholder="Ex.: 67"
-                  [value]="draftFilters().numberFrom"
-                  (input)="updateDraftFilter('numberFrom', $any($event.target).value)"
-                />
-              </label>
-              <label class="block">
-                <span class="mb-1 block text-sm font-medium text-slate-700">Nº final do CTe</span>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  class="input-control w-full text-slate-800"
-                  placeholder="Ex.: 70"
-                  [value]="draftFilters().numberTo"
-                  (input)="updateDraftFilter('numberTo', $any($event.target).value)"
-                />
-              </label>
-            </div>
-
-            <label class="block">
-              <span class="mb-1 block text-sm font-medium text-slate-700">Nº NF/NFe</span>
-              <input
-                type="text"
-                class="input-control w-full text-slate-800"
-                placeholder="Digite o número"
-                [value]="draftFilters().nfNumber"
-                (input)="updateDraftFilter('nfNumber', $any($event.target).value)"
-              />
-            </label>
-
-            <div
-              class="relative"
-              (focusin)="setAutocompleteOpen('sender')"
-              (focusout)="onAutocompleteHostFocusOut($event, 'sender')"
-            >
-              <span class="mb-1 block text-sm font-medium text-slate-700">Remetente</span>
-              <input
-                type="text"
-                class="input-control w-full text-slate-800"
-                placeholder="Digite para buscar"
-                autocomplete="off"
-                [value]="draftFilters().remetente"
-                (input)="updateDraftFilter('remetente', $any($event.target).value)"
-              />
-              @if (autocompleteOpen() === 'sender' && senderSuggestions().length > 0) {
-                <ul class="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg" role="listbox">
-                  @for (item of senderSuggestions(); track item) {
-                    <li role="option">
-                      <button
-                        type="button"
-                        class="w-full px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
-                        (mousedown)="$event.preventDefault()"
-                        (click)="pickAutocompleteSuggestion('sender', item)"
-                      >
-                        {{ item }}
-                      </button>
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-
-            <div
-              class="relative"
-              (focusin)="setAutocompleteOpen('recipient')"
-              (focusout)="onAutocompleteHostFocusOut($event, 'recipient')"
-            >
-              <span class="mb-1 block text-sm font-medium text-slate-700">Destinatário</span>
-              <input
-                type="text"
-                class="input-control w-full text-slate-800"
-                placeholder="Digite para buscar"
-                autocomplete="off"
-                [value]="draftFilters().destinatario"
-                (input)="updateDraftFilter('destinatario', $any($event.target).value)"
-              />
-              @if (autocompleteOpen() === 'recipient' && recipientSuggestions().length > 0) {
-                <ul class="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-auto rounded-md border border-slate-200 bg-white py-1 shadow-lg" role="listbox">
-                  @for (item of recipientSuggestions(); track item) {
-                    <li role="option">
-                      <button
-                        type="button"
-                        class="w-full px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
-                        (mousedown)="$event.preventDefault()"
-                        (click)="pickAutocompleteSuggestion('recipient', item)"
-                      >
-                        {{ item }}
-                      </button>
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-          </div>
-        }
-      </div>
-
-      <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-          <input
-            type="checkbox"
-            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-            [checked]="draftFilters().advancedEnabled"
-            (change)="toggleAdvancedFilters($any($event.target).checked)"
-          />
-          Filtros avançados
-        </label>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" class="btn-ghost" (click)="clearModalFilters()">Limpar</button>
-          <button type="button" class="btn-ghost" (click)="closeFilterModal()">Cancelar</button>
-          <button type="button" class="btn-primary" (click)="applyModalFilters()">Filtrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+@if (isNewCteNfeWizardOpen()) {
+  <app-new-cte-nfe-wizard
+    (wizardClosed)="onNewCteNfeWizardClosed()"
+    (reopenDocumentPicker)="onNewCteNfeWizardReopenDocumentPicker()"
+    (nfeSefazRowsPicked)="onNfeSefazRowsPickedFromWizard($event)"
+    (userBanner)="onNewCteNfeWizardBanner($event)"
+  />
 }
 
-@if (isCustomDateModalOpen()) {
-  <div
-    class="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/55 px-4 py-16 sm:px-6 sm:py-20"
-    (click)="cancelCustomDateModal()"
-    role="presentation"
-  >
-    <div
-      class="relative w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-6"
-      (click)="$event.stopPropagation()"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cte-custom-dates-title"
-    >
-      <div class="mb-5 flex items-start justify-between gap-4">
-        <h3 id="cte-custom-dates-title" class="text-xl font-semibold text-slate-800">Personalizado</h3>
-        <button
-          type="button"
-          class="rounded-md px-2 py-1 text-xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-          (click)="cancelCustomDateModal()"
-          aria-label="Fechar datas personalizadas"
-        >
-          x
-        </button>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2">
-        <label class="block">
-          <span class="mb-1 block text-sm font-medium text-slate-700">Data inicial <span class="text-red-500">*</span></span>
-          <input
-            type="date"
-            class="input-control w-full bg-white text-slate-800"
-            [value]="draftCustomStart()"
-            (input)="draftCustomStart.set($any($event.target).value)"
-          />
-        </label>
-        <label class="block">
-          <span class="mb-1 block text-sm font-medium text-slate-700">Data final <span class="text-red-500">*</span></span>
-          <input
-            type="date"
-            class="input-control w-full bg-white text-slate-800"
-            [value]="draftCustomEnd()"
-            (input)="draftCustomEnd.set($any($event.target).value)"
-          />
-        </label>
-      </div>
-
-      <p class="mt-4 text-xs text-slate-500">Use o formato de calendário do navegador (equivalente a DD/MM/AAAA na referência).</p>
-
-      <div class="mt-6 flex flex-wrap justify-end gap-2">
-        <button type="button" class="btn-ghost" (click)="cancelCustomDateModal()">Cancelar</button>
-        <button type="button" class="btn-primary" (click)="saveCustomDateRange()">Salvar</button>
-      </div>
-    </div>
-  </div>
-}
+<app-new-cte-origin-document-form-modal
+  [open]="isOriginDocumentFormModalOpen()"
+  [pathContext]="originDocumentFormPathContext()"
+  (modalClosed)="onOriginDocumentFormModalClosed()"
+  (helpRequested)="openOriginDocumentFormHelp()"
+  (documentSubmitted)="onOriginDocumentFormSubmitted($event)"
+/>

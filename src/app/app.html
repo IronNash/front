@@ -55,8 +55,44 @@
   }
 
   @if (activeTab() === 'CTe') {
+    @if (newCteDocumentChoice(); as pickedDocument) {
+      <div
+        class="surface-card mb-3 flex flex-wrap items-center justify-between gap-3 border-blue-200 bg-blue-50/80 p-4 text-sm text-slate-800"
+        role="status"
+      >
+        <p class="min-w-0">
+          Caminho escolhido:
+          <span class="font-semibold text-slate-900">{{ labelForNewCteDocument(pickedDocument) }}</span>
+          @if (pickedDocument === 'nfe') {
+            <span class="text-slate-600"> · Continue no assistente (modal) acima da lista.</span>
+          } @else {
+            <span class="text-slate-600"> · Próximos passos do assistente podem ser ligados aqui depois.</span>
+          }
+        </p>
+        <button type="button" class="btn-ghost shrink-0 text-xs sm:text-sm" (click)="clearNewCteDocumentChoice()">
+          Fechar aviso
+        </button>
+      </div>
+    }
+    @if (lastNfeSefazDemoRowIds(); as rowIds) {
+      <div
+        class="surface-card mb-3 flex flex-wrap items-center justify-between gap-3 border-emerald-200 bg-emerald-50/90 p-4 text-sm text-slate-800"
+        role="status"
+      >
+        <p class="min-w-0">
+          NF-e (lista demo SEFAZ) confirmadas no fluxo. IDs internos:
+          <span class="font-mono text-xs font-semibold text-emerald-900">{{ rowIds }}</span>
+        </p>
+        <button type="button" class="btn-ghost shrink-0 text-xs sm:text-sm" (click)="clearLastNfeSefazDemoPick()">Fechar</button>
+      </div>
+    }
     @defer (on idle) {
-      <app-cte-manager [rows]="cteRows" />
+      <app-cte-manager
+        [rows]="cteRows"
+        (newCteDocumentSelected)="onNewCteDocumentSelected($event)"
+        (newCteOriginDocumentCaptured)="onNewCteOriginDocumentCaptured($event)"
+        (nfeSefazSelectionConfirmed)="onNfeSefazSelectionConfirmed($event)"
+      />
     } @placeholder {
       <section class="surface-card p-10 text-center text-sm text-slate-400">Carregando módulo de CTe...</section>
     }

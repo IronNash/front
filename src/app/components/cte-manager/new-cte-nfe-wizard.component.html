@@ -1,0 +1,270 @@
+<div
+  class="fixed inset-0 z-cte-nfe-wizard overflow-y-auto bg-slate-950/45 px-4 py-8 sm:px-6"
+  (click)="onBackdropClick()"
+  role="presentation"
+>
+  <div
+    class="mx-auto w-full rounded-2xl border border-slate-200 bg-white shadow-2xl"
+    [class.max-w-4xl]="
+      activePanel() === 'method' || activePanel() === 'xml-placeholder' || activePanel() === 'access-key-placeholder'
+    "
+    [class.max-w-6xl]="activePanel() === 'sefaz'"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="
+      activePanel() === 'method'
+        ? 'nfe-wizard-method-title'
+        : activePanel() === 'sefaz'
+          ? 'nfe-wizard-sefaz-title'
+          : activePanel() === 'xml-placeholder'
+            ? 'nfe-wizard-xml-title'
+            : 'nfe-wizard-key-title'
+    "
+  >
+    @switch (activePanel()) {
+      @case ('method') {
+        <div class="p-5 sm:p-6">
+          <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <h3 id="nfe-wizard-method-title" class="text-xl font-semibold text-slate-900 sm:text-2xl">Como você quer trazer a NF-e?</h3>
+              <p class="mt-1 max-w-2xl text-sm text-slate-600">
+                Escolha uma opção. A busca automática na SEFAZ depende de um serviço no servidor com certificado digital — aqui mostramos só o fluxo de tela.
+              </p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+              <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
+              <button
+                type="button"
+                class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                (click)="closeWizard()"
+                aria-label="Fechar"
+              >
+                x
+              </button>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3">
+            @for (card of nfeMethodCards; track card.id) {
+              <button
+                type="button"
+                class="flex min-h-[10rem] flex-col items-center justify-center gap-3 rounded-xl border border-blue-200/80 bg-slate-50/50 p-4 text-center transition hover:border-blue-400 hover:bg-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                (click)="selectNfeMethod(card.id)"
+              >
+                <span class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-600" aria-hidden="true">
+                  @switch (card.id) {
+                    @case ('xml-upload') {
+                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                      </svg>
+                    }
+                    @case ('access-key') {
+                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                        />
+                      </svg>
+                    }
+                    @case ('sefaz-sync') {
+                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                      </svg>
+                    }
+                  }
+                </span>
+                <span class="text-sm font-semibold leading-snug text-slate-900">{{ card.title }}</span>
+                <span class="text-xs leading-snug text-slate-500">{{ card.description }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="mt-8 border-t border-slate-100 pt-4">
+            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-slate-200" (click)="backToDocumentPicker()">
+              Voltar
+            </button>
+          </div>
+        </div>
+      }
+      @case ('sefaz') {
+        <div class="flex max-h-[min(90vh,52rem)] flex-col p-5 sm:p-6">
+          <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <h3 id="nfe-wizard-sefaz-title" class="text-lg font-semibold text-slate-900 sm:text-xl">NF-e disponíveis (demonstração)</h3>
+              <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
+                Na produção, esta lista vem do backend após consulta à SEFAZ com o certificado da empresa.
+              </p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+              <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
+              <button
+                type="button"
+                class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                (click)="closeWizard()"
+                aria-label="Fechar"
+              >
+                x
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3 flex min-w-0 flex-wrap items-center gap-2">
+            <div class="relative min-w-[12rem] flex-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400" aria-hidden="true">
+                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </span>
+              <input
+                type="search"
+                class="input-control w-full pl-9 text-slate-800"
+                placeholder="Pesquisar na lista…"
+                [value]="sefazListSearch()"
+                (input)="updateSefazListSearch($any($event.target).value)"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn-ghost inline-flex shrink-0 items-center gap-2 text-sm"
+              [class.bg-slate-100]="sefazFilterUiOpen()"
+              (click)="toggleSefazFilterPanel()"
+            >
+              <svg class="h-4 w-4 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+              </svg>
+              Filtros
+            </button>
+            <button type="button" class="text-sm font-medium text-blue-600 hover:text-blue-800" (click)="clearSefazListFilters()">Limpar filtros</button>
+            <button
+              type="button"
+              class="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm transition hover:bg-blue-700"
+              (click)="refreshSefazListDemo()"
+              aria-label="Atualizar lista"
+            >
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+            </button>
+          </div>
+
+          @if (sefazFilterUiOpen()) {
+            <div class="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+              Painel de filtros avançados: conecte aqui datas, situação, emitente, etc., quando a API estiver pronta.
+            </div>
+          }
+
+          <div class="mb-3 flex gap-2 rounded-lg border border-blue-100 bg-blue-50/80 px-3 py-2 text-xs text-slate-700 sm:text-sm">
+            <span class="mt-0.5 shrink-0 text-blue-600" aria-hidden="true">
+              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+            </span>
+            <p>
+              Em sistemas reais, a SEFAZ pode levar algum tempo para disponibilizar notas após a autorização. A consulta usa
+              <strong class="font-medium">certificado digital + serviço no servidor</strong>, nunca o navegador sozinho.
+            </p>
+          </div>
+
+          @if (sefazListStatusMessage(); as syncMsg) {
+            <p class="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{{ syncMsg }}</p>
+          }
+          @if (sefazStepInlineError(); as errMsg) {
+            <p class="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{{ errMsg }}</p>
+          }
+
+          <div class="min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200">
+            <table class="w-full min-w-[40rem] text-left text-sm">
+              <thead class="sticky top-0 z-cte-table-sticky border-b border-slate-200 bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th class="w-10 px-2 py-2 pl-3">
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 rounded border-slate-300 text-blue-600"
+                      [checked]="sefazAllVisibleSelected()"
+                      (change)="toggleSelectAllVisibleSefazRows()"
+                      aria-label="Selecionar todas visíveis"
+                    />
+                  </th>
+                  <th class="px-2 py-2">Emissão</th>
+                  <th class="px-2 py-2">Nº NF-e</th>
+                  <th class="px-2 py-2">Emitente</th>
+                  <th class="px-2 py-2">Destinatário</th>
+                  <th class="px-2 py-2">Valor</th>
+                  <th class="px-2 py-2 pr-3">Situação</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of sefazFilteredRows(); track row.id) {
+                  <tr class="border-b border-slate-100 transition hover:bg-slate-50/80">
+                    <td class="px-2 py-2 pl-3 align-middle">
+                      <input
+                        type="checkbox"
+                        class="h-4 w-4 rounded border-slate-300 text-blue-600"
+                        [checked]="sefazSelectedIds().has(row.id)"
+                        (change)="toggleSefazRowSelection(row.id)"
+                        [attr.aria-label]="'Selecionar NF-e ' + row.nfNumber"
+                      />
+                    </td>
+                    <td class="whitespace-nowrap px-2 py-2 align-middle tabular-nums text-slate-700">{{ row.emission }}</td>
+                    <td class="whitespace-nowrap px-2 py-2 align-middle font-medium text-slate-900">{{ row.nfNumber }}</td>
+                    <td class="max-w-[10rem] truncate px-2 py-2 align-middle text-slate-700" [title]="row.issuer">{{ row.issuer }}</td>
+                    <td class="max-w-[10rem] truncate px-2 py-2 align-middle text-slate-700" [title]="row.recipient">{{ row.recipient }}</td>
+                    <td class="whitespace-nowrap px-2 py-2 align-middle text-slate-700">{{ row.value }}</td>
+                    <td class="px-2 py-2 pr-3 align-middle">
+                      <span class="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">{{ row.situation }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="7" class="px-3 py-10 text-center text-sm text-slate-400">Nenhuma nota corresponde à pesquisa.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
+            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-slate-200" (click)="backToMethodPicker()">
+              Voltar
+            </button>
+            <button type="button" class="btn-primary" (click)="confirmSefazSelection()">Adicionar</button>
+          </div>
+        </div>
+      }
+      @case ('xml-placeholder') {
+        <div class="p-5 sm:p-8">
+          <div class="mb-4 flex items-start justify-between gap-3">
+            <h3 id="nfe-wizard-xml-title" class="text-xl font-semibold text-slate-900">Upload de XML</h3>
+            <button type="button" class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 hover:bg-slate-100" (click)="closeWizard()" aria-label="Fechar">x</button>
+          </div>
+          <p class="text-sm leading-relaxed text-slate-600">
+            Aqui entra o seletor de arquivo e a validação do XML contra o schema da NF-e. Ainda não implementado neste protótipo.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-2">
+            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-200" (click)="backToMethodPicker()">Voltar</button>
+          </div>
+        </div>
+      }
+      @case ('access-key-placeholder') {
+        <div class="p-5 sm:p-8">
+          <div class="mb-4 flex items-start justify-between gap-3">
+            <h3 id="nfe-wizard-key-title" class="text-xl font-semibold text-slate-900">Chave de acesso</h3>
+            <button type="button" class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 hover:bg-slate-100" (click)="closeWizard()" aria-label="Fechar">x</button>
+          </div>
+          <p class="text-sm leading-relaxed text-slate-600">
+            Aqui entra o campo de 44 dígitos com máscara e validação do dígito verificador. Ainda não implementado neste protótipo.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-2">
+            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-200" (click)="backToMethodPicker()">Voltar</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
