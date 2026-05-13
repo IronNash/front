@@ -1,23 +1,55 @@
+/**
+ * Root shell: layout chrome, tab selection, período global (Tela inicial + CTe), totalizadores.
+ * Feature areas mantêm sinais locais onde faz sentido; período de lista CTe espelha `shellPeriod`.
+ */
 import { Component, computed, signal } from '@angular/core';
 import { CteManagerComponent } from './components/cte-manager/cte-manager.component';
 import { type NewCteDocumentId, type NewCteOriginDocumentFormPayload } from './components/cte-manager/cte-manager.models';
+import { HomeDashboardComponent } from './components/home-dashboard/home-dashboard.component';
 import { LayoutShellComponent } from './components/layout-shell/layout-shell.component';
 import { MdfeManagerComponent } from './components/mdfe-manager/mdfe-manager.component';
 import { ReportsManagerComponent } from './components/reports-manager/reports-manager.component';
-import { CteRow, MdfeRow, MenuTab, ReportTab, StatCard } from './dashboard.models';
+import {
+  DEMO_CTE_ROWS,
+  DEMO_MENU_ITEMS,
+  DEMO_MDFE_ROWS,
+  DEMO_REPORT_TABS,
+} from './dashboard.demo-data';
+import { CteRow, MdfeRow, MenuTab, ReportTab } from './dashboard.models';
+import { computeDashboardTotals, type ShellCtePeriodSlice } from './dashboard-metrics.utils';
 import { reportColumnsByTab, selectedReportColumnsByTabDefault } from './reports.config';
 
 @Component({
   selector: 'app-root',
-  imports: [LayoutShellComponent, CteManagerComponent, MdfeManagerComponent, ReportsManagerComponent],
+  standalone: true,
+  imports: [
+    LayoutShellComponent,
+    HomeDashboardComponent,
+    CteManagerComponent,
+    MdfeManagerComponent,
+    ReportsManagerComponent,
+  ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected readonly sidebarOpen = signal(false);
-  protected readonly selectedMonth = signal('Últimos 30 dias');
-  protected readonly activeTab = signal<MenuTab>('Visão geral');
+  protected readonly activeTab = signal<MenuTab>('Tela inicial');
   protected readonly activeReportTab = signal<ReportTab>('CTe');
+
+  protected readonly shellPeriod = signal<ShellCtePeriodSlice>({
+    preset: 'este-mes',
+    customStart: '',
+    customEnd: '',
+  });
+
+  protected readonly showXmlAccountingBanner = signal(true);
+
+  /** Zerado ao entrar na aba CTe pelo menu; incrementado só pela Tela inicial (“Novo CTe”) para abrir o seletor. */
+  protected readonly newCtePickerRequest = signal(0);
+
+  /** Idem para a aba MDFe. */
+  protected readonly newMdfePickerRequest = signal(0);
 
   /** Document the user picked in “Novo CTe” (banner on the CTe tab). */
   protected readonly newCteDocumentChoice = signal<NewCteDocumentId | null>(null);
@@ -32,141 +64,20 @@ export class App {
     other: 'Outro documento',
   };
 
-  protected readonly menuItems: MenuTab[] = ['Visão geral', 'CTe', 'MDFe', 'Relatórios'];
-  protected readonly reportTabs: ReportTab[] = ['CTe', 'MDFe', 'Cargas'];
+  protected readonly menuItems: MenuTab[] = [...DEMO_MENU_ITEMS];
+  protected readonly reportTabs: ReportTab[] = [...DEMO_REPORT_TABS];
 
-  protected readonly stats: StatCard[] = [
-    {
-      label: 'Documentos emitidos',
-      value: '128',
-      tone: 'blue',
-    },
-    {
-      label: 'Pendências',
-      value: '07',
-      tone: 'yellow',
-    },
-    {
-      label: 'Viagens concluídas',
-      value: '94%',
-      tone: 'blue',
-    },
-    {
-      label: 'Em andamento',
-      value: '12',
-      tone: 'yellow',
-    },
-    {
-      label: 'Faturamento mensal',
-      value: 'R$ 87.450,00',
-      tone: 'green',
-    },
-  ];
-
-  protected readonly periodLabel = computed(() => this.selectedMonth());
-
-  protected readonly cteRows: CteRow[] = [
-    {
-      emission: '05/05/2026',
-      number: '70',
-      type: 'Normal',
-      customer: 'TECNOTEMPERA T. TERMICA',
-      route: 'Guaramirim/SC - Jundiai/SP',
-      value: 'R$ 1.100,00',
-      status: 'Manifestado',
-      financialStatus: 'Lançado',
-      nfNumber: '45231',
-      remetente: 'Metalurgica Guaramirim LTDA',
-      destinatario: 'Industria Jundiai SP',
-    },
-    {
-      emission: '05/05/2026',
-      number: '69',
-      type: 'Normal',
-      customer: 'DEVOTUM INDUSTRIA E COM.',
-      route: 'Guaramirim/SC - Cachoeira/BA',
-      value: 'R$ 4.150,00',
-      status: 'Manifestado',
-      financialStatus: 'Não lançado',
-      nfNumber: '1050',
-      remetente: 'DEVOTUM INDUSTRIA E COM.',
-      destinatario: 'Distribuidora Cachoeira BA',
-    },
-    {
-      emission: '05/05/2026',
-      number: '68',
-      type: 'Normal',
-      customer: 'DEVOTUM INDUSTRIA E COM.',
-      route: 'Guaramirim/SC - Cachoeira/BA',
-      value: 'R$ 2.500,00',
-      status: 'Manifestado',
-      financialStatus: 'Lançado',
-      nfNumber: '998877',
-      remetente: 'Transportadora Sul LTDA',
-      destinatario: 'DEVOTUM INDUSTRIA E COM.',
-    },
-    {
-      emission: '27/04/2026',
-      number: '67',
-      type: 'Normal',
-      customer: 'S.M.A INDUSTRIA E COMER.',
-      route: 'Guaramirim/SC - Cachoeira/BA',
-      value: 'R$ 10,50',
-      status: 'Manifestado',
-      financialStatus: 'Não lançado',
-      nfNumber: '66001',
-      remetente: 'S.M.A INDUSTRIA E COMER.',
-      destinatario: 'Armazem Cachoeira LTDA',
-    },
-  ];
-
-  protected readonly mdfeRows: MdfeRow[] = [
-    {
-      emission: '05/05/2026',
-      number: '34',
-      route: 'SC - SP',
-      plate: 'TBM-6J14',
-      cargoValue: 'R$ 200.000,00',
-      cargoWeight: '440,00',
-      documents: '1 CTe',
-      status: 'Autorizado',
-    },
-    {
-      emission: '05/05/2026',
-      number: '33',
-      route: 'SC - SP',
-      plate: 'QJN-9E92',
-      cargoValue: 'R$ 127.592,08',
-      cargoWeight: '855,93',
-      documents: '1 CTe',
-      status: 'Autorizado',
-    },
-    {
-      emission: '05/05/2026',
-      number: '32',
-      route: 'SC - SP',
-      plate: 'GGB-2J23',
-      cargoValue: 'R$ 152.476,60',
-      cargoWeight: '1.132,86',
-      documents: '1 CTe',
-      status: 'Autorizado',
-    },
-    {
-      emission: '27/04/2026',
-      number: '31',
-      route: 'SC - SP',
-      plate: 'QJN-9E92',
-      cargoValue: 'R$ 48.097,49',
-      cargoWeight: '244,57',
-      documents: '2 CTes',
-      status: 'Encerrado',
-    },
-  ];
+  protected readonly cteRows: CteRow[] = DEMO_CTE_ROWS;
+  protected readonly mdfeRows: MdfeRow[] = DEMO_MDFE_ROWS;
 
   protected readonly reportColumnsByTab = reportColumnsByTab;
 
   protected readonly selectedReportColumnsByTab = signal<Record<ReportTab, string[]>>(
     selectedReportColumnsByTabDefault
+  );
+
+  protected readonly dashboardTotals = computed(() =>
+    computeDashboardTotals(this.cteRows, this.mdfeRows, this.shellPeriod())
   );
 
   protected readonly currentReportColumns = computed(
@@ -185,17 +96,41 @@ export class App {
     this.sidebarOpen.set(false);
   }
 
-  protected setMonth(month: string): void {
-    this.selectedMonth.set(month);
+  protected onShellPeriodChange(slice: ShellCtePeriodSlice): void {
+    this.shellPeriod.set(slice);
+  }
+
+  protected dismissXmlBanner(): void {
+    this.showXmlAccountingBanner.set(false);
+  }
+
+  protected onLayoutHelpClick(): void {
+    // Ex.: `/ajuda` ou modal de suporte.
   }
 
   protected setActiveTab(tab: MenuTab): void {
+    if (tab === 'CTe') {
+      this.newCtePickerRequest.set(0);
+    }
+    if (tab === 'MDFe') {
+      this.newMdfePickerRequest.set(0);
+    }
     this.activeTab.set(tab);
     this.closeSidebar();
     if (tab !== 'CTe') {
       this.newCteDocumentChoice.set(null);
       this.lastNfeSefazDemoRowIds.set(null);
     }
+  }
+
+  protected goCteFromHome(): void {
+    this.setActiveTab('CTe');
+    this.newCtePickerRequest.update((n) => n + 1);
+  }
+
+  protected goMdfeFromHome(): void {
+    this.setActiveTab('MDFe');
+    this.newMdfePickerRequest.update((n) => n + 1);
   }
 
   protected onNewCteDocumentSelected(documentId: NewCteDocumentId): void {
@@ -229,6 +164,11 @@ export class App {
 
   protected setActiveReportTab(tab: ReportTab): void {
     this.activeReportTab.set(tab);
+    const allowed = new Set(this.reportColumnsByTab[tab]);
+    this.selectedReportColumnsByTab.update((map) => ({
+      ...map,
+      [tab]: map[tab].filter((col) => allowed.has(col)),
+    }));
   }
 
   protected toggleReportColumn(column: string): void {

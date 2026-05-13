@@ -1,10 +1,10 @@
 <div
-  class="fixed inset-0 z-cte-nfe-wizard overflow-y-auto bg-slate-950/45 px-4 py-8 sm:px-6"
+  class="fixed inset-0 z-[140] flex min-h-screen flex-col items-center overflow-y-auto bg-slate-950/50 px-4 py-8 sm:px-6"
   (click)="onBackdropClick()"
   role="presentation"
 >
   <div
-    class="mx-auto w-full rounded-2xl border border-slate-200 bg-white shadow-2xl"
+    class="modal-panel mx-auto w-full shadow-2xl"
     [class.max-w-4xl]="
       activePanel() === 'method' || activePanel() === 'xml-placeholder' || activePanel() === 'access-key-placeholder'
     "
@@ -24,67 +24,57 @@
   >
     @switch (activePanel()) {
       @case ('method') {
-        <div class="p-5 sm:p-6">
-          <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
-            <div class="min-w-0 flex-1">
-              <h3 id="nfe-wizard-method-title" class="text-xl font-semibold text-slate-900 sm:text-2xl">Como você quer trazer a NF-e?</h3>
-              <p class="mt-1 max-w-2xl text-sm text-slate-600">
-                Escolha uma opção. A busca automática na SEFAZ depende de um serviço no servidor com certificado digital — aqui mostramos só o fluxo de tela.
-              </p>
+        <div class="flex max-h-[min(90vh,52rem)] flex-col">
+          <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
+            <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <h3 id="nfe-wizard-method-title" class="text-xl font-semibold text-slate-900 sm:text-2xl">Como você quer trazer a NF-e?</h3>
+                <p class="mt-1 max-w-2xl text-sm text-slate-600">
+                  Escolha uma opção. A busca automática na SEFAZ depende de um serviço no servidor com certificado digital — aqui mostramos só o fluxo de tela.
+                </p>
+              </div>
+              <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
+                <button type="button" class="modal-close-btn" (click)="closeWizard()" aria-label="Fechar">×</button>
+              </div>
             </div>
-            <div class="flex shrink-0 items-center gap-2">
-              <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
-              <button
-                type="button"
-                class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                (click)="closeWizard()"
-                aria-label="Fechar"
-              >
-                x
-              </button>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+              @for (card of nfeMethodCards; track card.id) {
+                <button type="button" class="nfe-method-tile" (click)="selectNfeMethod(card.id)">
+                  <span class="nfe-method-tile-icon" aria-hidden="true">
+                    @switch (card.id) {
+                      @case ('xml-upload') {
+                        <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                      }
+                      @case ('access-key') {
+                        <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                          />
+                        </svg>
+                      }
+                      @case ('sefaz-sync') {
+                        <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      }
+                    }
+                  </span>
+                  <span class="text-sm font-semibold leading-snug text-slate-900">{{ card.title }}</span>
+                  <span class="text-xs leading-snug text-slate-500">{{ card.description }}</span>
+                </button>
+              }
             </div>
           </div>
-
-          <div class="grid gap-3 sm:grid-cols-3">
-            @for (card of nfeMethodCards; track card.id) {
-              <button
-                type="button"
-                class="flex min-h-[10rem] flex-col items-center justify-center gap-3 rounded-xl border border-blue-200/80 bg-slate-50/50 p-4 text-center transition hover:border-blue-400 hover:bg-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                (click)="selectNfeMethod(card.id)"
-              >
-                <span class="inline-flex h-12 w-12 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-600" aria-hidden="true">
-                  @switch (card.id) {
-                    @case ('xml-upload') {
-                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                      </svg>
-                    }
-                    @case ('access-key') {
-                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                        />
-                      </svg>
-                    }
-                    @case ('sefaz-sync') {
-                      <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                      </svg>
-                    }
-                  }
-                </span>
-                <span class="text-sm font-semibold leading-snug text-slate-900">{{ card.title }}</span>
-                <span class="text-xs leading-snug text-slate-500">{{ card.description }}</span>
-              </button>
-            }
-          </div>
-
-          <div class="mt-8 border-t border-slate-100 pt-4">
-            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-slate-200" (click)="backToDocumentPicker()">
-              Voltar
-            </button>
+          <div class="shrink-0 border-t border-slate-100 px-5 py-4 sm:px-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" class="btn-ghost text-sm" (click)="backToDocumentPicker()">Voltar</button>
+            </div>
           </div>
         </div>
       }
@@ -97,16 +87,9 @@
                 Na produção, esta lista vem do backend após consulta à SEFAZ com o certificado da empresa.
               </p>
             </div>
-            <div class="flex shrink-0 items-center gap-2">
+            <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
               <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
-              <button
-                type="button"
-                class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                (click)="closeWizard()"
-                aria-label="Fechar"
-              >
-                x
-              </button>
+              <button type="button" class="modal-close-btn" (click)="closeWizard()" aria-label="Fechar">×</button>
             </div>
           </div>
 
@@ -119,7 +102,7 @@
               </span>
               <input
                 type="search"
-                class="input-control w-full pl-9 text-slate-800"
+                class="input-control w-full pl-9"
                 placeholder="Pesquisar na lista…"
                 [value]="sefazListSearch()"
                 (input)="updateSefazListSearch($any($event.target).value)"
@@ -178,9 +161,9 @@
             <p class="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{{ errMsg }}</p>
           }
 
-          <div class="min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200">
+          <div class="nfe-table-scroll">
             <table class="w-full min-w-[40rem] text-left text-sm">
-              <thead class="sticky top-0 z-cte-table-sticky border-b border-slate-200 bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+              <thead class="table-sticky-head">
                 <tr>
                   <th class="w-10 px-2 py-2 pl-3">
                     <input
@@ -201,7 +184,7 @@
               </thead>
               <tbody>
                 @for (row of sefazFilteredRows(); track row.id) {
-                  <tr class="border-b border-slate-100 transition hover:bg-slate-50/80">
+                  <tr class="nfe-table-row">
                     <td class="px-2 py-2 pl-3 align-middle">
                       <input
                         type="checkbox"
@@ -229,39 +212,51 @@
             </table>
           </div>
 
-          <div class="mt-4 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
-            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-slate-200" (click)="backToMethodPicker()">
-              Voltar
-            </button>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
+            <button type="button" class="btn-ghost text-sm" (click)="backToMethodPicker()">Voltar</button>
             <button type="button" class="btn-primary" (click)="confirmSefazSelection()">Adicionar</button>
           </div>
         </div>
       }
       @case ('xml-placeholder') {
-        <div class="p-5 sm:p-8">
-          <div class="mb-4 flex items-start justify-between gap-3">
-            <h3 id="nfe-wizard-xml-title" class="text-xl font-semibold text-slate-900">Upload de XML</h3>
-            <button type="button" class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 hover:bg-slate-100" (click)="closeWizard()" aria-label="Fechar">x</button>
+        <div class="flex max-h-[min(90vh,52rem)] flex-col">
+          <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-8">
+            <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <h3 id="nfe-wizard-xml-title" class="min-w-0 flex-1 text-xl font-semibold text-slate-900">Upload de XML</h3>
+              <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
+                <button type="button" class="modal-close-btn" (click)="closeWizard()" aria-label="Fechar">×</button>
+              </div>
+            </div>
+            <p class="text-sm leading-relaxed text-slate-600">
+              Aqui entra o seletor de arquivo e a validação do XML contra o schema da NF-e. Ainda não implementado neste protótipo.
+            </p>
           </div>
-          <p class="text-sm leading-relaxed text-slate-600">
-            Aqui entra o seletor de arquivo e a validação do XML contra o schema da NF-e. Ainda não implementado neste protótipo.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-2">
-            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-200" (click)="backToMethodPicker()">Voltar</button>
+          <div class="shrink-0 border-t border-slate-100 px-5 py-4 sm:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" class="btn-ghost text-sm" (click)="backToMethodPicker()">Voltar</button>
+            </div>
           </div>
         </div>
       }
       @case ('access-key-placeholder') {
-        <div class="p-5 sm:p-8">
-          <div class="mb-4 flex items-start justify-between gap-3">
-            <h3 id="nfe-wizard-key-title" class="text-xl font-semibold text-slate-900">Chave de acesso</h3>
-            <button type="button" class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 hover:bg-slate-100" (click)="closeWizard()" aria-label="Fechar">x</button>
+        <div class="flex max-h-[min(90vh,52rem)] flex-col">
+          <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-8">
+            <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <h3 id="nfe-wizard-key-title" class="min-w-0 flex-1 text-xl font-semibold text-slate-900">Chave de acesso</h3>
+              <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <button type="button" class="btn-secondary text-sm" (click)="requestHelp()">Como fazer</button>
+                <button type="button" class="modal-close-btn" (click)="closeWizard()" aria-label="Fechar">×</button>
+              </div>
+            </div>
+            <p class="text-sm leading-relaxed text-slate-600">
+              Aqui entra o campo de 44 dígitos com máscara e validação do dígito verificador. Ainda não implementado neste protótipo.
+            </p>
           </div>
-          <p class="text-sm leading-relaxed text-slate-600">
-            Aqui entra o campo de 44 dígitos com máscara e validação do dígito verificador. Ainda não implementado neste protótipo.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-2">
-            <button type="button" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-200" (click)="backToMethodPicker()">Voltar</button>
+          <div class="shrink-0 border-t border-slate-100 px-5 py-4 sm:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" class="btn-ghost text-sm" (click)="backToMethodPicker()">Voltar</button>
+            </div>
           </div>
         </div>
       }

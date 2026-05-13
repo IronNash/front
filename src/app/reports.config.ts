@@ -1,5 +1,28 @@
 import { ReportTab } from './dashboard.models';
 
+/** Relatórios → filtro “Data” (demo; ligue a API depois). */
+export type ReportDatePreset = 'today' | 'this-month' | 'previous-month' | 'custom';
+
+export const REPORT_DATE_PRESET_OPTIONS: { value: ReportDatePreset; label: string }[] = [
+  { value: 'today', label: 'Hoje' },
+  { value: 'this-month', label: 'Este mês' },
+  { value: 'previous-month', label: 'Mês anterior' },
+  { value: 'custom', label: 'Personalizado' },
+];
+
+/** Tomadores de exemplo para o multi-select de relatório CTe / Cargas. */
+export const REPORT_TOMADOR_OPTIONS: string[] = [
+  'TECNOTEMPERA T. TERMICA',
+  'DEVOTUM INDUSTRIA E COM.',
+  'S.M.A INDUSTRIA E COMER.',
+  'Remetente próprio',
+  'Destinatário final',
+];
+
+export const REPORT_MOTORISTA_OPTIONS: string[] = ['João Silva', 'Maria Souza', 'Carlos Prado'];
+
+export const REPORT_PLACA_OPTIONS: string[] = ['ABC1D23', 'IJK4L56', 'MNO7P89'];
+
 export const reportColumnsByTab: Record<ReportTab, string[]> = {
   CTe: [
     'Data de emissão',
@@ -10,7 +33,6 @@ export const reportColumnsByTab: Record<ReportTab, string[]> = {
     'N NFe vinculada',
     'Número do documento',
     'Motorista',
-    'Placa / Veículo',
     'Cidade de origem',
     'Cidade de destino',
     'UF',

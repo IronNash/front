@@ -35,6 +35,8 @@ export class NewCteOriginDocumentFormModalComponent {
   readonly pathContext = input<NewCteDocumentId | null>(null);
 
   readonly modalClosed = output<void>();
+  /** Voltar → reopen “Novo CTe” document picker (parent keeps flow open). */
+  readonly backToDocumentPicker = output<void>();
   readonly helpRequested = output<void>();
   readonly documentSubmitted = output<NewCteOriginDocumentFormPayload>();
 
@@ -81,6 +83,10 @@ export class NewCteOriginDocumentFormModalComponent {
 
   onCloseRequested(): void {
     this.modalClosed.emit();
+  }
+
+  goBack(): void {
+    this.backToDocumentPicker.emit();
   }
 
   requestHelp(): void {

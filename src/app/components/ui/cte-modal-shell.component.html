@@ -1,28 +1,30 @@
 @if (open()) {
-  <div class="fixed inset-0" [class]="backdropClasses()" (click)="onBackdrop()" role="presentation">
+  <div [class]="backdropClasses()" (click)="onBackdrop()" role="presentation">
     <div
-      [attr.class]="'mx-auto w-full rounded-2xl border border-slate-200 bg-white ' + panelMaxWidthClass() + ' ' + panelPaddingClass()"
+      [attr.class]="'modal-panel relative mx-auto w-full ' + panelMaxWidthClass() + ' ' + panelPaddingClass()"
       (click)="$event.stopPropagation()"
       role="dialog"
       aria-modal="true"
       [attr.aria-labelledby]="ariaLabelledBy()"
     >
-      <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
-        <div class="min-w-0 flex-1">
-          <ng-content select="[cteModalShellHeading]" />
+      <button
+        type="button"
+        class="modal-close-btn absolute end-4 top-4 z-10 sm:end-5 sm:top-5"
+        (click)="onCloseClick()"
+        [attr.aria-label]="closeButtonAriaLabel()"
+      >
+        <span class="modal-close-glyph" aria-hidden="true">&times;</span>
+      </button>
+      <header class="mb-6 min-w-0 pe-11 sm:pe-12">
+        <div class="flex flex-wrap items-start gap-3 sm:gap-4">
+          <div class="min-w-0 flex-1 basis-[min(100%,18rem)]">
+            <ng-content select="[cteModalShellHeading]" />
+          </div>
+          <div class="ms-auto flex shrink-0 flex-wrap items-start justify-end gap-2 empty:hidden sm:ms-0">
+            <ng-content select="[cteModalShellToolbar]" />
+          </div>
         </div>
-        <div class="flex shrink-0 items-center gap-2">
-          <ng-content select="[cteModalShellToolbar]" />
-          <button
-            type="button"
-            class="rounded-md px-2 py-1 text-2xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-            (click)="onCloseClick()"
-            [attr.aria-label]="closeButtonAriaLabel()"
-          >
-            x
-          </button>
-        </div>
-      </div>
+      </header>
       <ng-content />
     </div>
   </div>

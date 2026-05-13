@@ -1,0 +1,194 @@
+<div class="space-y-5">
+  @if (showXmlBanner()) {
+    <div
+      class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-200 bg-sky-50/90 px-4 py-3 text-sm text-slate-800"
+      role="status"
+    >
+      <p class="min-w-0 flex-1 leading-snug">Já preparamos seus XML do mês anterior para envio da contabilidade.</p>
+      <button type="button" class="btn-primary shrink-0 px-4 py-2 text-sm" (click)="dismissXmlBanner.emit()">
+        Baixar agora
+      </button>
+    </div>
+  }
+
+  <div class="grid min-w-0 gap-4 lg:grid-cols-3">
+    <article class="surface-card flex min-h-[11rem] min-w-0 flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center sm:p-5">
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-medium leading-snug text-slate-800">Baixe o nosso app para celular</p>
+        <p class="mt-1 text-xs leading-relaxed text-slate-500">Aponte sua câmera para o QR Code</p>
+      </div>
+      <div
+        class="mx-auto grid h-28 w-28 shrink-0 grid-cols-8 gap-px overflow-hidden rounded-lg border border-slate-200 bg-white p-1.5 sm:mx-0 sm:h-32 sm:w-32"
+        aria-hidden="true"
+      >
+        @for (idx of qrCells; track idx) {
+          <span
+            class="aspect-square rounded-[1px]"
+            [class.bg-slate-900]="qrCellDark(idx)"
+            [class.bg-white]="!qrCellDark(idx)"
+          ></span>
+        }
+      </div>
+    </article>
+
+    <button
+      type="button"
+      class="flex min-h-[11rem] flex-col items-center justify-center gap-3 rounded-2xl border border-blue-700 bg-blue-600 px-6 py-8 text-center text-white shadow-md shadow-blue-900/20 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      (click)="goCteTab.emit()"
+    >
+      <span class="relative flex h-12 w-12 items-center justify-center rounded-full bg-white/15 ring-2 ring-white/30">
+        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+          />
+        </svg>
+        <span class="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm" aria-hidden="true">
+          <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </span>
+      </span>
+      <span class="text-lg font-semibold tracking-tight">Novo CTe</span>
+    </button>
+
+    <button
+      type="button"
+      class="flex min-h-[11rem] flex-col items-center justify-center gap-3 rounded-2xl border border-blue-700 bg-blue-600 px-6 py-8 text-center text-white shadow-md shadow-blue-900/20 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      (click)="goMdfeTab.emit()"
+    >
+      <span class="relative flex h-12 w-12 items-center justify-center rounded-full bg-white/15 ring-2 ring-white/30">
+        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125H12m3-19.5v6.75m0 0l3-3m-3 3l-3-3M6.75 21H18a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0018 4.5H9"
+          />
+        </svg>
+        <span class="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm" aria-hidden="true">
+          <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </span>
+      </span>
+      <span class="text-lg font-semibold tracking-tight">Novo MDFe</span>
+    </button>
+  </div>
+
+  <section class="surface-card section-block min-w-0">
+    <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2">
+      <h3 class="text-base font-semibold text-slate-900">Totalizadores</h3>
+      <select
+        class="input-control w-auto min-w-[9.5rem] max-w-full shrink-0 text-sm"
+        aria-label="Período"
+        [value]="periodSlice().preset"
+        (change)="onPresetChange($event)"
+      >
+        @for (opt of periodOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    @if (periodSlice().preset === 'personalizado') {
+      <div class="mb-4 flex flex-wrap items-end gap-3 border-b border-slate-100 pb-4">
+        <label class="block text-sm">
+          <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data inicial</span>
+          <input type="date" class="input-control" [value]="periodSlice().customStart" (input)="onCustomFromChange($event)" />
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data final</span>
+          <input type="date" class="input-control" [value]="periodSlice().customEnd" (input)="onCustomToChange($event)" />
+        </label>
+      </div>
+    }
+
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center gap-2 border-b border-blue-100 bg-blue-100 px-3 py-2.5">
+          <svg class="h-5 w-5 shrink-0 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+            />
+          </svg>
+          <span class="text-xs font-medium text-blue-900">CT-e</span>
+        </div>
+        <div class="px-3 py-4">
+          <p class="text-xs leading-snug text-slate-600">CTe's Autorizados e Manifestados</p>
+          <p class="mt-2 text-3xl font-bold tabular-nums text-slate-900">{{ metrics().cteAutorizadosManifestados }}</p>
+        </div>
+      </article>
+
+      <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center gap-2 border-b border-amber-100 bg-amber-100 px-3 py-2.5">
+          <svg class="h-5 w-5 shrink-0 text-amber-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M20.25 7.5l-.625 10.5a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+            />
+          </svg>
+          <span class="text-xs font-medium text-amber-950">CT-e</span>
+        </div>
+        <div class="px-3 py-4">
+          <p class="text-xs leading-snug text-slate-600">CTe's Autorizados e Não Manifestados</p>
+          <p class="mt-2 text-3xl font-bold tabular-nums text-slate-900">{{ metrics().cteAutorizadosNaoManifestados }}</p>
+        </div>
+      </article>
+
+      <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center gap-2 border-b border-blue-100 bg-blue-100 px-3 py-2.5">
+          <svg class="h-5 w-5 shrink-0 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m0 0h12.75m0 0h.008v.008H12.75m-12.75 0V9.375c0-.621.504-1.125 1.125-1.125h4.125M12.75 3v11.25m0 0l3-3m-3 3l-3-3"
+            />
+          </svg>
+          <span class="text-xs font-medium text-blue-900">MDF-e</span>
+        </div>
+        <div class="px-3 py-4">
+          <p class="text-xs leading-snug text-slate-600">MDFe's Autorizados e Encerrados</p>
+          <p class="mt-2 text-3xl font-bold tabular-nums text-slate-900">{{ metrics().mdfeAutorizadosEncerrados }}</p>
+        </div>
+      </article>
+
+      <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center gap-2 border-b border-amber-100 bg-amber-100 px-3 py-2.5">
+          <svg class="h-5 w-5 shrink-0 text-amber-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="text-xs font-medium text-amber-950">MDF-e</span>
+        </div>
+        <div class="px-3 py-4">
+          <p class="text-xs leading-snug text-slate-600">MDFe's Autorizados e Não Encerrados</p>
+          <p class="mt-2 text-3xl font-bold tabular-nums text-slate-900">{{ metrics().mdfeAutorizadosNaoEncerrados }}</p>
+        </div>
+      </article>
+
+      <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm sm:col-span-2 xl:col-span-1">
+        <div class="flex items-center gap-2 border-b border-emerald-100 bg-emerald-100 px-3 py-2.5">
+          <svg class="h-5 w-5 shrink-0 text-emerald-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75A.75.75 0 012 4.5H3zm0 0v.375c0 .621-.504 1.125-1.125 1.125H1.125C.504 6 0 5.496 0 4.875V3.75c0-.621.504-1.125 1.125-1.125h1.5C3.504 2.625 4 3.129 4 3.75V4.5zm0 0h15m-15 0v-.75A.75.75 0 013 3h-.75a.75.75 0 00-.75.75V4.5zm15 0h.75a.75.75 0 01.75.75V6a.75.75 0 01-.75.75H18a.75.75 0 01-.75-.75V4.5z"
+            />
+          </svg>
+          <span class="text-xs font-medium text-emerald-950">Valores</span>
+        </div>
+        <div class="px-3 py-4">
+          <p class="text-xs leading-snug text-slate-600">Valor dos CTe's Autorizados e Manifestados</p>
+          <p class="mt-2 text-2xl font-bold tabular-nums text-slate-900 sm:text-3xl">{{ metrics().valorCtesManifestadosFormatado }}</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

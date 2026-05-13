@@ -1,15 +1,13 @@
-<section class="space-y-4 min-w-0">
+<section class="min-w-0 space-y-4">
   <article class="surface-card section-block min-w-0">
-    <h2 class="text-lg font-semibold">Relatórios</h2>
+    <h2 class="section-title">Relatórios</h2>
 
     <div class="mt-4 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
       @for (tab of reportTabs(); track tab) {
         <button
-          class="rounded-md px-3 py-1.5 text-sm font-medium transition"
-          [class.bg-blue-50]="activeReportTab() === tab"
-          [class.text-blue-700]="activeReportTab() === tab"
-          [class.text-slate-600]="activeReportTab() !== tab"
-          [class.hover:bg-slate-100]="activeReportTab() !== tab"
+          type="button"
+          class="pill-tab"
+          [class.pill-tab-active]="activeReportTab() === tab"
           (click)="onTabClick(tab)"
         >
           {{ tab }}
@@ -17,85 +15,357 @@
       }
     </div>
 
+    <p class="eyebrow mt-5 text-slate-600">Filtros para gerar o relatório</p>
+
     @if (activeReportTab() === 'CTe') {
-      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
-        <div class="grid min-w-0 gap-3 sm:grid-cols-3">
+      <div class="mt-2 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="grid min-w-0 flex-1 gap-4 sm:grid-cols-2">
           <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select
+              class="input-control w-full min-w-0"
+              [value]="datePreset()"
+              (change)="setDatePresetFromSelect($event)"
+            >
+              @for (opt of datePresetOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
           </label>
-          <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
-            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
-          </label>
-          <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
-            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
-          </label>
+          <div class="min-w-0 text-sm" data-report-ms="cte-tomador">
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
+            <p class="mb-1.5 text-xs text-slate-500">Selecione um ou mais.</p>
+            <div class="relative">
+              <button
+                type="button"
+                class="input-control flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm font-normal text-slate-800"
+                [attr.aria-expanded]="reportMultiselectOpen() === 'cte-tomador'"
+                aria-haspopup="listbox"
+                (click)="toggleReportMultiselect('cte-tomador')"
+              >
+                <span class="min-w-0 truncate">{{ multiselectSummary(tomadoresCte(), 'Selecione um ou mais') }}</span>
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-150"
+                  [class.rotate-180]="reportMultiselectOpen() === 'cte-tomador'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              @if (reportMultiselectOpen() === 'cte-tomador') {
+                <div
+                  class="absolute left-0 right-0 z-30 mt-1 max-h-60 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-slate-900/5"
+                  role="listbox"
+                  aria-multiselectable="true"
+                >
+                  @for (name of tomadorOptions; track name) {
+                    <label class="flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        [checked]="tomadoresCte().includes(name)"
+                        (change)="toggleTomador('CTe', name)"
+                      />
+                      <span class="leading-snug">{{ name }}</span>
+                    </label>
+                  }
+                </div>
+              }
+            </div>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <button class="btn-secondary">Visualizar relatório</button>
-          <button class="btn-primary">Baixar em Excel</button>
+        <div class="flex shrink-0 flex-wrap gap-2 lg:pt-5">
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onViewReport()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none" />
+            </svg>
+            Visualizar relatório
+          </button>
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onDownloadExcel()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 14.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.608-1.288.608h-3.882c-.519 0-1.006-.232-1.288-.608l-.97-1.293a1.125 1.125 0 00-1.173-.417l-4.423 1.106c-.501.125-.852.575-.852 1.091V19.5A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25v-4.25z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75v9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5L12 3.75 15.75 7.5" />
+            </svg>
+            Baixar em Excel
+          </button>
         </div>
       </div>
     } @else if (activeReportTab() === 'MDFe') {
-      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
-        <div class="grid min-w-0 gap-3 sm:grid-cols-3">
+      <div class="mt-2 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="grid min-w-0 flex-1 gap-4 sm:grid-cols-3">
           <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select
+              class="input-control w-full min-w-0"
+              [value]="datePreset()"
+              (change)="setDatePresetFromSelect($event)"
+            >
+              @for (opt of datePresetOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
           </label>
-          <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Motorista</span>
-            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
-          </label>
-          <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Placa</span>
-            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
-          </label>
+          <div class="min-w-0 text-sm" data-report-ms="mdfe-motorista">
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Motorista</span>
+            <div class="relative">
+              <button
+                type="button"
+                class="input-control flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm font-normal text-slate-800"
+                [attr.aria-expanded]="reportMultiselectOpen() === 'mdfe-motorista'"
+                aria-haspopup="listbox"
+                (click)="toggleReportMultiselect('mdfe-motorista')"
+              >
+                <span class="min-w-0 truncate">{{ multiselectSummary(motoristasMdfe(), 'Selecione um ou mais') }}</span>
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-150"
+                  [class.rotate-180]="reportMultiselectOpen() === 'mdfe-motorista'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              @if (reportMultiselectOpen() === 'mdfe-motorista') {
+                <div
+                  class="absolute left-0 right-0 z-30 mt-1 max-h-60 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-slate-900/5"
+                  role="listbox"
+                  aria-multiselectable="true"
+                >
+                  @for (name of motoristaOptions; track name) {
+                    <label class="flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        [checked]="motoristasMdfe().includes(name)"
+                        (change)="toggleMotoristaMdfe(name)"
+                      />
+                      <span class="leading-snug">{{ name }}</span>
+                    </label>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <div class="min-w-0 text-sm" data-report-ms="mdfe-placa">
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Placa</span>
+            <div class="relative">
+              <button
+                type="button"
+                class="input-control flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm font-normal text-slate-800"
+                [attr.aria-expanded]="reportMultiselectOpen() === 'mdfe-placa'"
+                aria-haspopup="listbox"
+                (click)="toggleReportMultiselect('mdfe-placa')"
+              >
+                <span class="min-w-0 truncate">{{ multiselectSummary(placasMdfe(), 'Selecione um ou mais') }}</span>
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-150"
+                  [class.rotate-180]="reportMultiselectOpen() === 'mdfe-placa'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              @if (reportMultiselectOpen() === 'mdfe-placa') {
+                <div
+                  class="absolute left-0 right-0 z-30 mt-1 max-h-60 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-slate-900/5"
+                  role="listbox"
+                  aria-multiselectable="true"
+                >
+                  @for (plate of placaOptions; track plate) {
+                    <label class="flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        [checked]="placasMdfe().includes(plate)"
+                        (change)="togglePlacaMdfe(plate)"
+                      />
+                      <span class="leading-snug">{{ plate }}</span>
+                    </label>
+                  }
+                </div>
+              }
+            </div>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <button class="btn-secondary">Visualizar relatório</button>
-          <button class="btn-primary">Baixar em Excel</button>
+        <div class="flex shrink-0 flex-wrap gap-2 lg:pt-5">
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onViewReport()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none" />
+            </svg>
+            Visualizar relatório
+          </button>
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onDownloadExcel()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 14.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.608-1.288.608h-3.882c-.519 0-1.006-.232-1.288-.608l-.97-1.293a1.125 1.125 0 00-1.173-.417l-4.423 1.106c-.501.125-.852.575-.852 1.091V19.5A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25v-4.25z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75v9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5L12 3.75 15.75 7.5" />
+            </svg>
+            Baixar em Excel
+          </button>
         </div>
       </div>
     } @else {
-      <div class="mt-5 flex min-w-0 flex-wrap items-end justify-between gap-4">
-        <div class="grid min-w-0 gap-3 sm:grid-cols-2">
+      <div class="mt-2 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="grid min-w-0 flex-1 gap-4 sm:grid-cols-2">
           <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data</span>
-            <select class="input-control w-full min-w-0"><option>Mês anterior</option></select>
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Data</span>
+            <select
+              class="input-control w-full min-w-0"
+              [value]="datePreset()"
+              (change)="setDatePresetFromSelect($event)"
+            >
+              @for (opt of datePresetOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
           </label>
-          <label class="block min-w-0 text-sm">
-            <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
-            <select class="input-control w-full min-w-0"><option>Selecione um ou mais</option></select>
-          </label>
+          <div class="min-w-0 text-sm" data-report-ms="cargas-tomador">
+            <span class="mb-0.5 block text-xs font-medium uppercase text-slate-500">Tomador (quem paga o frete)</span>
+            <p class="mb-1.5 text-xs text-slate-500">Selecione um ou mais.</p>
+            <div class="relative">
+              <button
+                type="button"
+                class="input-control flex w-full min-w-0 items-center justify-between gap-2 py-2 text-left text-sm font-normal text-slate-800"
+                [attr.aria-expanded]="reportMultiselectOpen() === 'cargas-tomador'"
+                aria-haspopup="listbox"
+                (click)="toggleReportMultiselect('cargas-tomador')"
+              >
+                <span class="min-w-0 truncate">{{ multiselectSummary(tomadoresCargas(), 'Selecione um ou mais') }}</span>
+                <svg
+                  class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-150"
+                  [class.rotate-180]="reportMultiselectOpen() === 'cargas-tomador'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              @if (reportMultiselectOpen() === 'cargas-tomador') {
+                <div
+                  class="absolute left-0 right-0 z-30 mt-1 max-h-60 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-slate-900/5"
+                  role="listbox"
+                  aria-multiselectable="true"
+                >
+                  @for (name of tomadorOptions; track name) {
+                    <label class="flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1.5 text-sm text-slate-700 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        [checked]="tomadoresCargas().includes(name)"
+                        (change)="toggleTomador('Cargas', name)"
+                      />
+                      <span class="leading-snug">{{ name }}</span>
+                    </label>
+                  }
+                </div>
+              }
+            </div>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <button class="btn-primary">Baixar em Excel</button>
+        <div class="flex shrink-0 flex-wrap gap-2 lg:pt-5">
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onViewReport()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none" />
+            </svg>
+            Visualizar relatório
+          </button>
+          <button type="button" class="btn-primary inline-flex items-center gap-2" (click)="onDownloadExcel()">
+            <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 14.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.608-1.288.608h-3.882c-.519 0-1.006-.232-1.288-.608l-.97-1.293a1.125 1.125 0 00-1.173-.417l-4.423 1.106c-.501.125-.852.575-.852 1.091V19.5A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25v-4.25z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75v9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5L12 3.75 15.75 7.5" />
+            </svg>
+            Baixar em Excel
+          </button>
         </div>
+      </div>
+    }
+
+    @if (datePreset() === 'custom') {
+      <div class="mt-4 flex flex-wrap items-end gap-3 border-t border-slate-100 pt-4">
+        <label class="block text-sm">
+          <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data inicial</span>
+          <input type="date" class="input-control" [value]="customDateFrom()" (input)="setCustomFrom($event)" />
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block text-xs font-medium uppercase text-slate-500">Data final</span>
+          <input type="date" class="input-control" [value]="customDateTo()" (input)="setCustomTo($event)" />
+        </label>
       </div>
     }
   </article>
 
   <article class="surface-card section-block min-w-0">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-      <h3 class="text-base font-semibold">Colunas do relatório</h3>
-      <button class="text-sm font-medium text-blue-600 hover:text-blue-700" (click)="onSelectAllColumns()">
+      <h3 class="text-base font-semibold text-slate-900">Selecione as colunas do relatório</h3>
+      <button
+        type="button"
+        class="text-sm font-medium text-blue-600 hover:text-blue-700"
+        (click)="onSelectAllColumns()"
+      >
         Selecionar todas
       </button>
     </div>
 
-    <div class="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-x-5 gap-y-2.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       @for (column of reportColumns(); track column) {
-        <label class="flex items-center gap-2 text-sm text-slate-700">
+        <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
-            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            class="h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
             [checked]="selectedReportColumns().includes(column)"
             (change)="onToggleColumn(column)"
           />
-          <span>{{ column }}</span>
+          <span class="leading-snug">{{ column }}</span>
         </label>
       }
     </div>

@@ -1,26 +1,30 @@
 import { Component, computed, input, output } from '@angular/core';
 
 /**
- * Named overlay tiers — must match `z-cte-*` tokens in `src/styles.css` (`@theme`).
+ * Modal stacking tiers (numeric `z-[…]` — must sit above the shell sidebar `z-30`).
+ * Order: … CTe new-doc (120) < MDFe new-doc (125) < origin form (130) < NF-e wizard (140).
  */
 export type CteModalOverlayTier =
   | 'cte-list-filters'
   | 'cte-list-filters-nested'
   | 'cte-new-doc-picker'
+  | 'mdfe-new-doc-picker'
   | 'cte-origin-doc-form'
   | 'cte-nfe-wizard';
 
-const TIER_BACKDROP_CLASS: Record<CteModalOverlayTier, string> = {
-  'cte-list-filters': 'z-cte-list-filters',
-  'cte-list-filters-nested': 'z-cte-list-filters-nested',
-  'cte-new-doc-picker': 'z-cte-new-doc-picker',
-  'cte-origin-doc-form': 'z-cte-origin-doc-form',
-  'cte-nfe-wizard': 'z-cte-nfe-wizard',
+const TIER_Z_CLASS: Record<CteModalOverlayTier, string> = {
+  'cte-list-filters': 'z-[100]',
+  'cte-list-filters-nested': 'z-[110]',
+  'cte-new-doc-picker': 'z-[120]',
+  'mdfe-new-doc-picker': 'z-[125]',
+  'cte-origin-doc-form': 'z-[130]',
+  'cte-nfe-wizard': 'z-[140]',
 };
 
 /**
- * Shared backdrop + white panel + header row (title slot, optional toolbar, close).
- * Use attribute `cteModalShellHeading` / `cteModalShellToolbar` on projected nodes.
+ * Shared backdrop + panel + header (title + optional toolbar on one row; close fixed at top-end).
+ * Toolbar projects beside the title (`items-start`); close does not share that row so it stays in the corner.
+ * Use `cteModalShellHeading` / `cteModalShellToolbar` on projected nodes.
  */
 @Component({
   selector: 'app-cte-modal-shell',
@@ -31,21 +35,26 @@ const TIER_BACKDROP_CLASS: Record<CteModalOverlayTier, string> = {
 export class CteModalShellComponent {
   readonly open = input(false);
   readonly overlayTier = input<CteModalOverlayTier>('cte-new-doc-picker');
-  /** e.g. `bg-slate-950/40` — wizard uses slightly stronger tint. */
+  /** Backdrop tint behind the dialog panel. */
   readonly backdropToneClass = input('bg-slate-950/40');
   readonly scrollableBackdrop = input(true);
   readonly panelMaxWidthClass = input('max-w-4xl');
-  readonly panelPaddingClass = input('p-5 shadow-2xl sm:p-6');
+  readonly panelPaddingClass = input('p-5 sm:p-6');
   readonly ariaLabelledBy = input.required<string>();
   readonly closeButtonAriaLabel = input('Fechar');
 
   readonly backdropDismiss = output<void>();
   readonly closeRequested = output<void>();
 
-  readonly tierBackdropClass = computed(() => TIER_BACKDROP_CLASS[this.overlayTier()]);
+  readonly tierZClass = computed(() => TIER_Z_CLASS[this.overlayTier()]);
 
   readonly backdropClasses = computed(() => {
-    const parts = ['fixed inset-0', this.tierBackdropClass(), this.backdropToneClass(), 'px-4 py-8 sm:px-6'];
+    const parts = [
+      'fixed inset-0 flex min-h-screen flex-col items-center',
+      this.tierZClass(),
+      this.backdropToneClass(),
+      'px-4 py-8 sm:px-6',
+    ];
     if (this.scrollableBackdrop()) {
       parts.push('overflow-y-auto');
     }

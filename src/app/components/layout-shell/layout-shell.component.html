@@ -1,13 +1,14 @@
-<div class="min-h-screen bg-slate-50 text-slate-800">
+<div class="min-h-screen bg-slate-100 text-slate-800 antialiased">
   <div class="flex min-h-screen min-w-0">
     <aside
-      class="fixed inset-y-0 left-0 z-30 w-64 border-r border-slate-200 bg-white text-slate-700 transition-transform duration-200 lg:static lg:translate-x-0"
+      class="fixed inset-y-0 left-0 z-30 flex w-[4.5rem] flex-col border-r border-slate-800 bg-slate-900 text-slate-300 shadow-xl shadow-slate-900/40 transition-transform duration-200 ease-out lg:static lg:translate-x-0 lg:shadow-none xl:w-56"
       [class.-translate-x-full]="!sidebarOpen()"
     >
-      <div class="flex h-16 items-center justify-between border-b border-slate-200 px-4">
-        <span class="text-sm font-semibold tracking-wide text-slate-900">Test Board</span>
+      <div class="flex h-14 items-center justify-center border-b border-slate-800 px-2 xl:justify-between xl:px-3">
+        <span class="hidden text-xs font-semibold tracking-tight text-white xl:inline">Charlie</span>
         <button
-          class="rounded-md p-1 text-slate-500 hover:bg-slate-100 lg:hidden"
+          type="button"
+          class="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white lg:hidden"
           (click)="onMenuClose()"
           aria-label="Fechar menu"
         >
@@ -17,19 +18,42 @@
         </button>
       </div>
 
-      <nav class="space-y-1 px-3 py-4 text-sm">
+      <nav class="flex flex-1 flex-col gap-1 px-1.5 py-3 xl:px-2">
         @for (item of menuItems(); track item) {
           <button
             type="button"
-            class="flex w-full items-center rounded-lg px-3 py-2 text-left font-medium transition duration-200"
-            [class.bg-blue-50]="activeTab() === item"
-            [class.text-blue-700]="activeTab() === item"
-            [class.text-slate-600]="activeTab() !== item"
-            [class.hover:bg-slate-100]="activeTab() !== item"
+            class="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2.5 text-[10px] font-medium leading-tight transition xl:flex-row xl:items-center xl:gap-3 xl:px-3 xl:py-2.5 xl:text-left xl:text-sm"
+            [class]="
+              activeTab() === item
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            "
             [attr.aria-current]="activeTab() === item ? 'page' : null"
             (click)="onTabChange(item)"
           >
-            {{ item }}
+            @switch (item) {
+              @case ('Tela inicial') {
+                <svg class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+              }
+              @case ('CTe') {
+                <svg class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              }
+              @case ('MDFe') {
+                <svg class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125H12m3-19.5v6.75m0 0l3-3m-3 3l-3-3M6.75 21H18a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0018 4.5H9" />
+                </svg>
+              }
+              @case ('Relatórios') {
+                <svg class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+              }
+            }
+            <span class="max-w-[4.5rem] text-center xl:max-w-none">{{ item }}</span>
           </button>
         }
       </nav>
@@ -37,29 +61,67 @@
 
     @if (sidebarOpen()) {
       <button
-        class="fixed inset-0 z-20 bg-black/40 lg:hidden"
+        type="button"
+        class="fixed inset-0 z-20 bg-slate-900/40 backdrop-blur-[1px] transition-opacity lg:hidden"
         (click)="onMenuClose()"
         aria-label="Fechar menu lateral"
       ></button>
     }
 
     <div class="min-w-0 flex-1 lg:ml-0">
-      <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-3 py-3 backdrop-blur sm:px-6">
-        <div class="mx-auto flex w-full min-w-0 max-w-6xl items-center justify-between gap-2">
-          <div class="flex items-center gap-3">
+      <header
+        class="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-3 py-2.5 shadow-sm shadow-slate-900/5 backdrop-blur supports-[backdrop-filter]:bg-white/90 sm:px-5"
+      >
+        <div class="mx-auto flex w-full min-w-0 max-w-6xl flex-wrap items-center gap-3 sm:gap-4">
+          <h1 class="sr-only">{{ activeTab() }}</h1>
+          <div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <button
-              class="rounded-md border border-slate-300 px-3 py-1.5 text-sm transition hover:bg-slate-50 lg:hidden"
+              type="button"
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm shadow-blue-900/20 lg:hidden"
               (click)="onMenuToggle()"
+              aria-label="Abrir menu"
             >
-              Menu
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
             </button>
-            <h1 class="min-w-0 truncate text-base font-semibold capitalize sm:text-lg">{{ activeTab() }}</h1>
+            <span class="hidden h-9 w-9 shrink-0 rounded-lg bg-blue-600 shadow-sm shadow-blue-900/15 lg:flex lg:items-center lg:justify-center" aria-hidden="true">
+              <span class="text-xs font-bold tracking-tighter text-white">C</span>
+            </span>
+
+            @if (headerBadgeText(); as badge) {
+              <p
+                class="hidden min-w-0 truncate rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-center text-xs font-medium text-blue-800 sm:block sm:max-w-[20rem] md:max-w-md lg:max-w-xl"
+              >
+                {{ badge }}
+              </p>
+            }
           </div>
-          <span class="hidden text-sm text-slate-500 sm:block">Workspace local de protótipo</span>
+
+          <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 sm:px-3 sm:text-sm"
+              (click)="onHelpClick()"
+            >
+              <svg class="h-4 w-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+              </svg>
+              <span class="hidden sm:inline">Ajuda</span>
+            </button>
+            <button
+              type="button"
+              class="hidden max-w-[14rem] flex-col rounded-lg border border-transparent px-2 py-1 text-left text-xs transition hover:border-slate-200 hover:bg-slate-50 sm:flex md:max-w-xs"
+            >
+              <span class="truncate font-medium text-slate-900">{{ headerUserPrimary() }}</span>
+              <span class="truncate text-[11px] text-slate-500">{{ headerUserSecondary() }}</span>
+            </button>
+            <span class="hidden text-slate-400 sm:inline" aria-hidden="true">▾</span>
+          </div>
         </div>
       </header>
 
-      <main class="mx-auto w-full min-w-0 max-w-6xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-6">
+      <main class="mx-auto w-full min-w-0 max-w-6xl space-y-5 px-3 py-5 sm:space-y-6 sm:px-6 sm:py-6">
         <ng-content />
       </main>
     </div>

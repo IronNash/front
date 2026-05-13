@@ -153,6 +153,22 @@ export function matchesPeriodPreset(emissionDate: Date, filters: CteFilters): bo
   }
 }
 
+/** Filtro só por período (útil em MDFe / totalizadores sem montar um `CteRow` completo). */
+export function rowMatchesPeriod(
+  emissionDdMmYyyy: string,
+  period: Pick<CteFilters, 'periodPreset' | 'customStart' | 'customEnd'>
+): boolean {
+  if (!period.periodPreset) {
+    return true;
+  }
+  const emissionDate = parseDdMmYyyy(emissionDdMmYyyy);
+  if (!emissionDate) {
+    return false;
+  }
+  const filters = period as CteFilters;
+  return matchesPeriodPreset(emissionDate, filters);
+}
+
 export function matchesAdvancedFilters(row: CteRow, filters: CteFilters): boolean {
   const emissionDate = parseDdMmYyyy(row.emission);
 

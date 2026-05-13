@@ -1,6 +1,6 @@
 <section class="surface-card section-block @container min-w-0">
   <div class="mb-3 flex min-w-0 flex-wrap items-center justify-between gap-2">
-    <h2 class="text-lg font-semibold">Gestão de CTe</h2>
+    <h2 class="section-title">Gestão de CTe</h2>
     <button class="btn-primary shrink-0" type="button" (click)="openNewCteDocumentPicker()">
       Novo CTe
     </button>
@@ -30,7 +30,7 @@
     <input
       type="search"
       placeholder="Pesquisar"
-      class="input-control min-w-[9rem] max-w-full flex-1 basis-0 text-slate-800"
+      class="input-control min-w-[9rem] max-w-full flex-1 basis-0"
       [value]="searchTerm()"
       (input)="updateSearchTerm($any($event.target).value)"
     />
@@ -55,12 +55,14 @@
     @if (filteredRows().length === 0) {
       <p class="py-8 text-center text-sm text-slate-400">Nenhum CTe encontrado para os filtros atuais.</p>
     } @else {
-      <ul class="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+      <ul class="list-card-shell">
         @for (row of filteredRows(); track row.number) {
           <li class="min-w-0 px-3 py-2.5">
             <div class="flex items-start justify-between gap-2">
-              <span class="inline-flex shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">{{ row.status }}</span>
-              <button type="button" class="shrink-0 rounded-md border border-slate-300 px-2 py-1 text-xs transition hover:bg-slate-100">Ver</button>
+              <span
+                class="inline-flex shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700"
+                >{{ row.status }}</span>
+              <button type="button" class="btn-table">Ver</button>
             </div>
             <div class="mt-1.5 flex items-start justify-between gap-2">
               <p class="min-w-0 flex-1 text-sm font-semibold leading-snug text-slate-900">{{ row.customer }}</p>
@@ -79,18 +81,18 @@
   </div>
 
   <div class="hidden min-w-0 @[56rem]:block">
-    <div class="overflow-x-auto rounded-xl border border-slate-200">
+    <div class="data-table-frame">
       <table class="w-full min-w-0 text-sm">
         <thead class="table-head">
           <tr>
-            <th class="whitespace-nowrap px-3 py-2 pl-4 text-left font-medium">Emissão</th>
-            <th class="whitespace-nowrap px-3 py-2 text-left font-medium">Número</th>
-            <th class="whitespace-nowrap px-3 py-2 text-left font-medium">Tipo</th>
-            <th class="px-3 py-2 text-left font-medium">Tomador</th>
-            <th class="px-3 py-2 text-left font-medium">Origem → Destino</th>
-            <th class="whitespace-nowrap px-3 py-2 text-left font-medium">Valor total</th>
-            <th class="whitespace-nowrap px-3 py-2 text-left font-medium">Situação</th>
-            <th class="whitespace-nowrap px-3 py-2 pr-4 text-left font-medium">Ações</th>
+            <th class="whitespace-nowrap px-3 py-2 pl-4 text-left">Emissão</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left">Número</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left">Tipo</th>
+            <th class="px-3 py-2 text-left">Tomador</th>
+            <th class="px-3 py-2 text-left">Origem → Destino</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left">Valor total</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left">Situação</th>
+            <th class="whitespace-nowrap px-3 py-2 pr-4 text-left">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -103,15 +105,19 @@
               <td class="max-w-[14rem] truncate px-3 py-2 align-middle text-slate-700 lg:max-w-md xl:max-w-none" [title]="row.route">{{ row.route }}</td>
               <td class="whitespace-nowrap px-3 py-2 align-middle text-slate-700">{{ row.value }}</td>
               <td class="px-3 py-2 align-middle">
-                <span class="inline-flex whitespace-nowrap rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">{{ row.status }}</span>
+                <span
+                  class="inline-flex whitespace-nowrap rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                  >{{ row.status }}</span>
               </td>
               <td class="whitespace-nowrap px-3 py-2 pr-4 align-middle">
-                <button type="button" class="rounded-md border border-slate-300 px-2 py-1 text-xs transition hover:bg-slate-100">Ver</button>
+                <button type="button" class="btn-table">Ver</button>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="8" class="px-3 py-8 text-center text-sm text-slate-400">Nenhum CTe encontrado para os filtros atuais.</td>
+              <td colspan="8" class="px-3 py-8 text-center text-sm text-slate-400">
+                Nenhum CTe encontrado para os filtros atuais.
+              </td>
             </tr>
           }
         </tbody>
@@ -132,7 +138,7 @@
   [open]="isNewCteDocumentPickerOpen()"
   (documentPicked)="onNewCteDocumentPicked($event)"
   (modalClosed)="closeNewCteDocumentPicker()"
-  (helpRequested)="openNewCteHelp()"
+  (helpRequested)="onCteFlowHelp('document-picker')"
 />
 
 @if (isNewCteNfeWizardOpen()) {
@@ -148,6 +154,7 @@
   [open]="isOriginDocumentFormModalOpen()"
   [pathContext]="originDocumentFormPathContext()"
   (modalClosed)="onOriginDocumentFormModalClosed()"
-  (helpRequested)="openOriginDocumentFormHelp()"
+  (backToDocumentPicker)="onOriginDocumentFormBackToPicker()"
+  (helpRequested)="onCteFlowHelp('origin-document-form')"
   (documentSubmitted)="onOriginDocumentFormSubmitted($event)"
 />

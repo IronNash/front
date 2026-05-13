@@ -8,12 +8,18 @@ import { MenuTab } from '../../dashboard.models';
 })
 export class LayoutShellComponent {
   readonly menuItems = input<MenuTab[]>([]);
-  readonly activeTab = input<MenuTab>('Visão geral');
+  readonly activeTab = input<MenuTab>('Tela inicial');
   readonly sidebarOpen = input(false);
+
+  /** Faixa opcional ao centro do header (ex.: documento disponível). */
+  readonly headerBadgeText = input<string | null>(null);
+  readonly headerUserPrimary = input('51.984.550 ROSANGELA FONTENELE DA SILVA PERES');
+  readonly headerUserSecondary = input('Cadastros e configurações');
 
   readonly menuToggle = output<void>();
   readonly menuClose = output<void>();
   readonly tabChange = output<MenuTab>();
+  readonly helpClick = output<void>();
 
   protected onMenuToggle(): void {
     this.menuToggle.emit();
@@ -25,5 +31,9 @@ export class LayoutShellComponent {
 
   protected onTabChange(tab: MenuTab): void {
     this.tabChange.emit(tab);
+  }
+
+  protected onHelpClick(): void {
+    this.helpClick.emit();
   }
 }

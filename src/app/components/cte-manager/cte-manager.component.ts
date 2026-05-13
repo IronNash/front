@@ -1,5 +1,6 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { CteRow } from '../../dashboard.models';
+import type { ShellCtePeriodSlice } from '../../dashboard-metrics.utils';
 import { CteListFiltersModalComponent } from './cte-list-filters-modal.component';
 import { NewCteDocumentModalComponent } from './new-cte-document-modal.component';
 import { NewCteNfeWizardComponent } from './new-cte-nfe-wizard.component';
@@ -28,6 +29,20 @@ export type { NewCteDocumentId, NewCteOriginDocumentFormPayload } from './cte-ma
 export class CteManagerComponent {
   readonly rows = input<CteRow[]>([]);
 
+  /** Sincroniza período com a Tela inicial / shell (mesmos presets do modal “Filtrar”). */
+  readonly shellPeriod = input<ShellCtePeriodSlice>({
+    preset: 'este-mes',
+    customStart: '',
+    customEnd: '',
+  });
+
+  readonly shellPeriodChange = output<ShellCtePeriodSlice>();
+
+  /**
+   * Contador do `App` (Tela inicial): cada incremento dispara o mesmo fluxo do botão “Novo CTe” na lista.
+   */
+  readonly openDocumentPickerRequest = input(0);
+
   /** Which document type the user chose in “Novo CTe” (NF-e, third-party CTe, …). */
   readonly newCteDocumentSelected = output<NewCteDocumentId>();
 
@@ -52,10 +67,28 @@ export class CteManagerComponent {
   readonly isCteListFiltersModalOpen = signal(false);
   readonly appliedCteListFilters = signal<CteFilters>(createEmptyFilters());
 
+  constructor() {
+    effect(() => {
+      const sp = this.shellPeriod();
+      this.appliedCteListFilters.update((f) => {
+        if (f.periodPreset === sp.preset && f.customStart === sp.customStart && f.customEnd === sp.customEnd) {
+          return f;
+        }
+        return { ...f, periodPreset: sp.preset, customStart: sp.customStart, customEnd: sp.customEnd };
+      });
+    });
+
+    effect(() => {
+      const tick = this.openDocumentPickerRequest();
+      if (tick > 0) {
+        queueMicrotask(() => this.openNewCteDocumentPicker());
+      }
+    });
+  }
+
   readonly hasActiveCteListFilters = computed(() => {
     const f = this.appliedCteListFilters();
     return (
-      f.periodPreset !== '' ||
       f.status !== '' ||
       f.customer !== '' ||
       f.advancedEnabled ||
@@ -117,14 +150,23 @@ export class CteManagerComponent {
     this.newCteNfeWizardBanner.set(null);
   }
 
-  openNewCteHelp(): void {}
+  /**
+   * Help links from modals land here until there is a real help center or docs route.
+   */
+  protected onCteFlowHelp(_where: 'document-picker' | 'origin-document-form'): void {
+    // Later: open help drawer, Zendesk, or `/ajuda/novo-cte` depending on `_where`.
+  }
 
   onOriginDocumentFormModalClosed(): void {
     this.isOriginDocumentFormModalOpen.set(false);
     this.originDocumentFormPathContext.set(null);
   }
 
-  openOriginDocumentFormHelp(): void {}
+  onOriginDocumentFormBackToPicker(): void {
+    this.isOriginDocumentFormModalOpen.set(false);
+    this.originDocumentFormPathContext.set(null);
+    this.openNewCteDocumentPicker();
+  }
 
   onOriginDocumentFormSubmitted(payload: NewCteOriginDocumentFormPayload): void {
     const path = this.originDocumentFormPathContext();
@@ -154,9 +196,15 @@ export class CteManagerComponent {
   onCteListFiltersSaved(filters: CteFilters): void {
     this.appliedCteListFilters.set(filters);
     this.isCteListFiltersModalOpen.set(false);
+    this.shellPeriodChange.emit({
+      preset: filters.periodPreset,
+      customStart: filters.customStart,
+      customEnd: filters.customEnd,
+    });
   }
 
   clearCteListModalFilters(): void {
     this.appliedCteListFilters.set(createEmptyFilters());
+    this.shellPeriodChange.emit({ preset: '', customStart: '', customEnd: '' });
   }
 }

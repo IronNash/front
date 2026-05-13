@@ -1,11 +1,5 @@
-export type MenuTab = 'Visão geral' | 'CTe' | 'MDFe' | 'Relatórios';
+export type MenuTab = 'Tela inicial' | 'CTe' | 'MDFe' | 'Relatórios';
 export type ReportTab = 'CTe' | 'MDFe' | 'Cargas';
-
-export type StatCard = {
-  label: string;
-  value: string;
-  tone: 'blue' | 'yellow' | 'green';
-};
 
 export type CteRow = {
   emission: string;

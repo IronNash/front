@@ -243,12 +243,12 @@
 
 @if (isCustomDateModalOpen()) {
   <div
-    class="fixed inset-0 z-cte-list-filters-nested flex items-start justify-center bg-slate-950/55 px-4 py-16 sm:px-6 sm:py-20"
+    class="fixed inset-0 z-[110] flex min-h-screen items-start justify-center overflow-y-auto bg-slate-950/55 px-4 py-16 sm:px-6 sm:py-20"
     (click)="cancelCustomDateModal()"
     role="presentation"
   >
     <div
-      class="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
+      class="modal-panel relative mt-8 w-full max-w-lg p-5 shadow-2xl sm:p-6"
       (click)="$event.stopPropagation()"
       role="dialog"
       aria-modal="true"
@@ -258,7 +258,7 @@
         <h3 id="cte-list-custom-dates-title" class="text-xl font-semibold text-slate-800">Personalizado</h3>
         <button
           type="button"
-          class="rounded-md px-2 py-1 text-xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+          class="modal-close-btn"
           (click)="cancelCustomDateModal()"
           aria-label="Fechar datas personalizadas"
         >
